@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snake Battle - Vote Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-bg: #0a192f;
+            --secondary-bg: #112240;
+            --card-bg: #1a365d;
+            --accent-primary: #64ffda;
+            --accent-secondary: #6366f1;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #e6f1ff;
+            --text-secondary: #8892b0;
+            --border-color: #233554;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: linear-gradient(135deg, var(--card-bg), var(--secondary-bg));
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            background: var(--accent-primary);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* Player Cards */
+        .players-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .player-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--secondary-bg));
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: var(--accent-primary);
+            border: 2px solid var(--accent-primary);
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .player-info {
+            flex: 1;
+            z-index: 1;
+            min-width: 0;
+        }
+
+        .player-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-score {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .player-indicator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .player-indicator.player {
+            background: var(--accent-primary);
+            color: var(--primary-bg);
+        }
+
+        .player-indicator.computer {
+            background: var(--accent-secondary);
+            color: var(--primary-bg);
+        }
+
+        /* Game Stats */
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+
+        /* Game Board */
+        .game-board-container {
+            background: linear-gradient(135deg, var(--card-bg), var(--secondary-bg));
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        #gameCanvas {
+            border: 2px solid var(--accent-primary);
+            border-radius: 8px;
+            background: var(--primary-bg);
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Game Controls */
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+        }
+
+        .game-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            display: none;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .control-btn {
+            background: var(--secondary-bg);
+            border: 2px solid var(--accent-primary);
+            border-radius: 8px;
+            color: var(--accent-primary);
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .control-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .control-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .control-down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(100, 255, 218, 0.3);
+            border-top: 4px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Game Over Modal */
+        .game-over-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .modal-title.victory {
+            color: var(--accent-success);
+        }
+
+        .modal-title.defeat {
+            color: var(--accent-danger);
+        }
+
+        .modal-title.draw {
+            color: var(--accent-warning);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .reward-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .reward-display.win {
+            color: var(--accent-success);
+        }
+
+        .reward-display.lose {
+            color: var(--text-secondary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: grid;
+            }
+
+            .game-stats {
+                flex-wrap: wrap;
+            }
+
+            .stat-item {
+                min-width: 80px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .player-name {
+                font-size: 14px;
+            }
+
+            .player-score {
+                font-size: 12px;
+            }
+
+            /* Allow scrolling on mobile */
+            body {
+                overflow-y: auto;
+            }
+        }
+
+        /* Prevent scrolling on desktop when playing */
+        @media (min-width: 769px) {
+            body.game-active {
+                overflow: hidden;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <button id="backBtn" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Vote
+        </button>
+        <div class="nav-title">Snake Battle</div>
+        <div></div>
+    </nav>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content animate__animated animate__fadeIn">
+            <div class="loading-spinner"></div>
+            <h2 class="text-2xl font-bold mb-2">Loading Snake Battle</h2>
+            <p class="text-text-secondary">Preparing your game...</p>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="game-over-modal">
+        <div class="modal-content animate__animated animate__zoomIn">
+            <h2 class="modal-title" id="modalTitle">Game Over!</h2>
+            <div class="modal-body">
+                <p id="modalMessage" class="text-lg mb-4"></p>
+                <div class="reward-display" id="rewardDisplay">
+                    <i class="fas fa-coins mr-2"></i>
+                    <span id="rewardAmount">No Reward</span>
+                </div>
+                <div class="modal-buttons" id="modalButtons">
+                    <button id="retryBtn" class="game-btn">
+                        <i class="fas fa-redo"></i>
+                        Retry Level
+                    </button>
+                    <button id="nextLevelBtn" class="game-btn" style="display: none;">
+                        <i class="fas fa-arrow-right"></i>
+                        Next Level
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="text-2xl md:text-3xl font-bold mb-1">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">
+                    Snake Battle
+                </span>
+            </h1>
+            <p class="text-text-secondary text-sm">Battle against the computer to earn Vote Coins!</p>
+        </header>
+
+        <!-- Player Cards -->
+        <div class="players-container">
+            <div class="player-card animate__animated animate__fadeInLeft">
+                <div class="player-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="player-info">
+                    <div class="player-name" id="playerName">Player</div>
+                    <div class="player-score">Score: <span id="playerScore">0</span></div>
+                </div>
+                <div class="player-indicator player">P</div>
+            </div>
+
+            <div class="player-card animate__animated animate__fadeInRight">
+                <div class="player-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="player-info">
+                    <div class="player-name">Computer</div>
+                    <div class="player-score">Score: <span id="computerScore">0</span></div>
+                </div>
+                <div class="player-indicator computer">C</div>
+            </div>
+        </div>
+
+        <!-- Game Stats -->
+        <div class="game-stats animate__animated animate__fadeInUp">
+            <div class="stat-item">
+                <div class="stat-label">Level</div>
+                <div class="stat-value" id="levelDisplay">1</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Time</div>
+                <div class="stat-value" id="timerDisplay">60</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">High Score</div>
+                <div class="stat-value" id="highScoreDisplay">0</div>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board-container animate__animated animate__fadeIn">
+            <canvas id="gameCanvas"></canvas>
+
+            <!-- Game Controls -->
+            <div class="game-controls">
+                <button id="startBtn" class="game-btn">
+                    <i class="fas fa-play"></i>
+                    Start
+                </button>
+                <button id="pauseBtn" class="game-btn" disabled>
+                    <i class="fas fa-pause"></i>
+                    Pause
+                </button>
+                <button id="resetBtn" class="game-btn">
+                    <i class="fas fa-redo"></i>
+                    Reset
+                </button>
+            </div>
+
+            <!-- Mobile Controls -->
+            <div class="mobile-controls">
+                <button class="control-btn control-up" data-direction="up">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+                <button class="control-btn control-left" data-direction="left">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="control-btn control-right" data-direction="right">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <button class="control-btn control-down" data-direction="down">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBsqxp46x8mwXRpThRdpxsskRM1ie4PNCg",
+            authDomain: "vote-edb06.firebaseapp.com",
+            projectId: "vote-edb06",
+            storageBucket: "vote-edb06.appspot.com",
+            messagingSenderId: "916721565065",
+            appId: "1:916721565065:web:2a451c1b45173d8b127558"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Game Variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game settings
+        const gridSize = 20;
+        let tileCount;
+        let tileCountY;
+
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameSpeed = 100;
+        let timeLeft = 60;
+        let level = 1;
+        let playerScore = 0;
+        let computerScore = 0;
+        let highScore = 0;
+        let timerInterval;
+        let userId = null;
+        let userData = null;
+
+        // Snake objects
+        let playerSnake = [];
+        let computerSnake = [];
+        let playerDirection = { x: 1, y: 0 };
+        let computerDirection = { x: -1, y: 0 };
+        let apple = { x: 15, y: 10 };
+
+        // Set canvas size based on container
+        function resizeCanvas() {
+            const container = document.querySelector('.game-board-container');
+            const maxWidth = container.clientWidth - 20; // Account for padding
+            const maxHeight = window.innerHeight - 450; // Leave space for other elements
+
+            // Calculate grid size to fit the container
+            tileCount = Math.floor(maxWidth / gridSize);
+            tileCountY = Math.floor(maxHeight / gridSize);
+
+            // Ensure minimum grid size
+            tileCount = Math.max(tileCount, 20);
+            tileCountY = Math.max(tileCountY, 15);
+
+            canvas.width = tileCount * gridSize;
+            canvas.height = tileCountY * gridSize;
+
+            // Redraw if game is initialized
+            if (playerSnake.length > 0) {
+                draw();
+            }
+        }
+
+        // Initialize game
+        function initGame() {
+            // Initialize player snake
+            playerSnake = [
+                { x: Math.floor(tileCount / 3), y: Math.floor(tileCountY / 2) },
+                { x: Math.floor(tileCount / 3) - 1, y: Math.floor(tileCountY / 2) },
+                { x: Math.floor(tileCount / 3) - 2, y: Math.floor(tileCountY / 2) }
+            ];
+
+            // Initialize computer snake
+            computerSnake = [
+                { x: Math.floor(tileCount * 2 / 3), y: Math.floor(tileCountY / 2) },
+                { x: Math.floor(tileCount * 2 / 3) + 1, y: Math.floor(tileCountY / 2) },
+                { x: Math.floor(tileCount * 2 / 3) + 2, y: Math.floor(tileCountY / 2) }
+            ];
+
+            // Reset directions
+            playerDirection = { x: 1, y: 0 };
+            computerDirection = { x: -1, y: 0 };
+
+            // Generate random apple position
+            generateApple();
+
+            // Reset scores
+            playerScore = 0;
+            computerScore = 0;
+            timeLeft = 60;
+
+            // Update UI
+            updateScoreDisplay();
+            updateTimerDisplay();
+            updateLevelDisplay();
+
+            // Load high score
+            loadHighScore();
+        }
+
+        // Generate random apple position
+        function generateApple() {
+            let validPosition = false;
+
+            while (!validPosition) {
+                apple = {
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCountY)
+                };
+
+                validPosition = true;
+
+                // Check if apple is on player snake
+                for (let segment of playerSnake) {
+                    if (segment.x === apple.x && segment.y === apple.y) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+
+                // Check if apple is on computer snake
+                if (validPosition) {
+                    for (let segment of computerSnake) {
+                        if (segment.x === apple.x && segment.y === apple.y) {
+                            validPosition = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Draw game elements
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#0a192f';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = '#233554';
+            ctx.lineWidth = 0.5;
+
+            for (let i = 0; i <= tileCount; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * gridSize, 0);
+                ctx.lineTo(i * gridSize, canvas.height);
+                ctx.stroke();
+            }
+
+            for (let i = 0; i <= tileCountY; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, i * gridSize);
+                ctx.lineTo(canvas.width, i * gridSize);
+                ctx.stroke();
+            }
+
+            // Draw player snake
+            for (let i = 0; i < playerSnake.length; i++) {
+                const segment = playerSnake[i];
+
+                if (i === 0) {
+                    // Head
+                    ctx.fillStyle = '#64ffda';
+                } else {
+                    // Body
+                    ctx.fillStyle = '#4fd1c5';
+                }
+
+                ctx.fillRect(segment.x * gridSize + 2, segment.y * gridSize + 2, gridSize - 4, gridSize - 4);
+            }
+
+            // Draw computer snake
+            for (let i = 0; i < computerSnake.length; i++) {
+                const segment = computerSnake[i];
+
+                if (i === 0) {
+                    // Head
+                    ctx.fillStyle = '#6366f1';
+                } else {
+                    // Body
+                    ctx.fillStyle = '#553c9a';
+                }
+
+                ctx.fillRect(segment.x * gridSize + 2, segment.y * gridSize + 2, gridSize - 4, gridSize - 4);
+            }
+
+            // Draw apple
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(
+                apple.x * gridSize + gridSize / 2,
+                apple.y * gridSize + gridSize / 2,
+                gridSize / 2 - 2,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        // Update game state
+        function update() {
+            if (!gameRunning || gamePaused) return;
+
+            // Move player snake
+            const playerHead = { ...playerSnake[0] };
+            playerHead.x += playerDirection.x;
+            playerHead.y += playerDirection.y;
+
+            // Wrap around edges (no walls)
+            if (playerHead.x < 0) playerHead.x = tileCount - 1;
+            if (playerHead.x >= tileCount) playerHead.x = 0;
+            if (playerHead.y < 0) playerHead.y = tileCountY - 1;
+            if (playerHead.y >= tileCountY) playerHead.y = 0;
+
+            // Check player collision with itself
+            for (let i = 1; i < playerSnake.length; i++) {
+                if (playerHead.x === playerSnake[i].x && playerHead.y === playerSnake[i].y) {
+                    gameOver('You hit yourself!');
+                    return;
+                }
+            }
+
+            // Check player collision with computer snake
+            for (let segment of computerSnake) {
+                if (playerHead.x === segment.x && playerHead.y === segment.y) {
+                    gameOver('You hit the computer snake!');
+                    return;
+                }
+            }
+
+            // Add new head to player snake
+            playerSnake.unshift(playerHead);
+
+            // Check if player ate apple
+            if (playerHead.x === apple.x && playerHead.y === apple.y) {
+                playerScore++;
+                updateScoreDisplay();
+                generateApple();
+            } else {
+                // Remove tail if no apple was eaten
+                playerSnake.pop();
+            }
+
+            // Move computer snake (AI)
+            moveComputerSnake();
+
+            // Check if computer ate apple
+            const computerHead = computerSnake[0];
+            if (computerHead.x === apple.x && computerHead.y === apple.y) {
+                computerScore++;
+                updateScoreDisplay();
+                generateApple();
+            } else {
+                // Remove tail if no apple was eaten
+                computerSnake.pop();
+            }
+        }
+
+        // Move computer snake (AI)
+        function moveComputerSnake() {
+            const head = computerSnake[0];
+            const possibleMoves = [];
+
+            // Check all possible directions
+            const directions = [
+                { x: 0, y: -1 }, // Up
+                { x: 1, y: 0 },  // Right
+                { x: 0, y: 1 },  // Down
+                { x: -1, y: 0 }  // Left
+            ];
+
+            for (let dir of directions) {
+                // Skip the opposite direction of current movement
+                if (dir.x === -computerDirection.x && dir.y === -computerDirection.y) continue;
+
+                const newX = head.x + dir.x;
+                const newY = head.y + dir.y;
+
+                // Check if move is valid (not hitting itself)
+                let collision = false;
+                for (let segment of computerSnake) {
+                    if (newX === segment.x && newY === segment.y) {
+                        collision = true;
+                        break;
+                    }
+                }
+
+                if (!collision) {
+                    // Check if not hitting player snake
+                    collision = false;
+                    for (let segment of playerSnake) {
+                        if (newX === segment.x && newY === segment.y) {
+                            collision = true;
+                            break;
+                        }
+                    }
+
+                    if (!collision) {
+                        possibleMoves.push(dir);
+                    }
+                }
+            }
+
+            if (possibleMoves.length > 0) {
+                // Choose best move based on level
+                let chosenMove;
+
+                if (level === 1) {
+                    // Level 1: Random move
+                    chosenMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                } else if (level === 2) {
+                    // Level 2: Sometimes move toward apple
+                    if (Math.random() < 0.7) {
+                        chosenMove = getBestMoveTowardsApple(possibleMoves);
+                    } else {
+                        chosenMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                    }
+                } else {
+                    // Level 3+: Always move toward apple
+                    chosenMove = getBestMoveTowardsApple(possibleMoves);
+                }
+
+                computerDirection = chosenMove;
+            }
+
+            // Move computer snake
+            const newHead = {
+                x: head.x + computerDirection.x,
+                y: head.y + computerDirection.y
+            };
+
+            // Wrap around edges (no walls)
+            if (newHead.x < 0) newHead.x = tileCount - 1;
+            if (newHead.x >= tileCount) newHead.x = 0;
+            if (newHead.y < 0) newHead.y = tileCountY - 1;
+            if (newHead.y >= tileCountY) newHead.y = 0;
+
+            computerSnake.unshift(newHead);
+        }
+
+        // Get best move towards apple
+        function getBestMoveTowardsApple(possibleMoves) {
+            const head = computerSnake[0];
+            let bestMove = possibleMoves[0];
+            let bestDistance = Infinity;
+
+            for (let move of possibleMoves) {
+                const newX = head.x + move.x;
+                const newY = head.y + move.y;
+
+                // Calculate distance to apple
+                const distance = Math.abs(newX - apple.x) + Math.abs(newY - apple.y);
+
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    bestMove = move;
+                }
+            }
+
+            return bestMove;
+        }
+
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+
+            if (gameRunning && !gamePaused) {
+                setTimeout(gameLoop, gameSpeed);
+            }
+        }
+
+        // Start game
+        function startGame() {
+            if (gameRunning) return;
+
+            initGame();
+            gameRunning = true;
+            gamePaused = false;
+
+            // Prevent scrolling on desktop only
+            if (window.innerWidth >= 769) {
+                document.body.classList.add('game-active');
+            }
+
+            // Update UI
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+
+            // Start timer
+            startTimer();
+
+            // Start game loop
+            gameLoop();
+        }
+
+        // Pause game
+        function pauseGame() {
+            if (!gameRunning) return;
+
+            gamePaused = !gamePaused;
+
+            if (gamePaused) {
+                document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-play"></i> Resume';
+                clearInterval(timerInterval);
+            } else {
+                document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+                startTimer();
+                gameLoop();
+            }
+        }
+
+        // Reset game
+        function resetGame() {
+            gameRunning = false;
+            gamePaused = false;
+            clearInterval(timerInterval);
+
+            // Allow scrolling again
+            document.body.classList.remove('game-active');
+
+            // Update UI
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> Pause';
+
+            initGame();
+            draw();
+        }
+
+        // Game over
+        function gameOver(message) {
+            gameRunning = false;
+            clearInterval(timerInterval);
+
+            // Allow scrolling again
+            document.body.classList.remove('game-active');
+
+            // Determine winner
+            let resultMessage = '';
+            let isWinner = false;
+            let isDraw = false;
+
+            if (playerScore > computerScore) {
+                resultMessage = `You won with ${playerScore} points!`;
+                document.getElementById('modalTitle').textContent = 'Victory!';
+                document.getElementById('modalTitle').className = 'modal-title victory';
+                isWinner = true;
+            } else if (playerScore < computerScore) {
+                resultMessage = `Computer won with ${computerScore} points!`;
+                document.getElementById('modalTitle').textContent = 'Defeat!';
+                document.getElementById('modalTitle').className = 'modal-title defeat';
+                isWinner = false;
+            } else {
+                resultMessage = `It's a tie with ${playerScore} points!`;
+                document.getElementById('modalTitle').textContent = 'Draw!';
+                document.getElementById('modalTitle').className = 'modal-title draw';
+                isDraw = true;
+            }
+
+            // Update high score
+            if (playerScore > highScore) {
+                highScore = playerScore;
+                localStorage.setItem('snakeHighScore', highScore);
+                updateHighScoreDisplay();
+            }
+
+            // Show game over modal
+            document.getElementById('modalMessage').textContent = resultMessage;
+
+            // Set reward display
+            const rewardDisplay = document.getElementById('rewardDisplay');
+            const rewardAmount = document.getElementById('rewardAmount');
+
+            if (isWinner) {
+                rewardDisplay.className = 'reward-display win';
+                rewardAmount.textContent = '+1 Vote Coin';
+            } else {
+                rewardDisplay.className = 'reward-display lose';
+                rewardAmount.textContent = 'No Reward';
+            }
+
+            // Show/hide next level button
+            const nextLevelBtn = document.getElementById('nextLevelBtn');
+            if (isWinner) {
+                nextLevelBtn.style.display = 'inline-flex';
+            } else {
+                nextLevelBtn.style.display = 'none';
+            }
+
+            document.getElementById('gameOverModal').style.display = 'flex';
+
+            // Update user data in Firebase only if winner
+            if (isWinner) {
+                updateUserData();
+            }
+        }
+
+        // Start timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    gameOver('Time\'s up!');
+                }
+            }, 1000);
+        }
+
+        // Update score display
+        function updateScoreDisplay() {
+            document.getElementById('playerScore').textContent = playerScore;
+            document.getElementById('computerScore').textContent = computerScore;
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            document.getElementById('timerDisplay').textContent = timeLeft;
+        }
+
+        // Update level display
+        function updateLevelDisplay() {
+            document.getElementById('levelDisplay').textContent = level;
+        }
+
+        // Update high score display
+        function updateHighScoreDisplay() {
+            document.getElementById('highScoreDisplay').textContent = highScore;
+        }
+
+        // Load high score
+        function loadHighScore() {
+            const savedHighScore = localStorage.getItem('snakeHighScore');
+            if (savedHighScore) {
+                highScore = parseInt(savedHighScore);
+                updateHighScoreDisplay();
+            }
+        }
+
+        // Fetch user data from Firebase based on username
+        function fetchUserData() {
+            const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+
+            if (!username) {
+                console.error("No username found in session or local storage");
+                return;
+            }
+
+            console.log("Fetching data for username:", username);
+
+            // Query the voters collection to find the user with matching username
+            db.collection('voters')
+                .where('username', '==', username)
+                .get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        console.error("No user found with username:", username);
+                        return;
+                    }
+
+                    // Get the first matching document
+                    const userDoc = querySnapshot.docs[0];
+                    userId = userDoc.id;
+                    userData = userDoc.data();
+
+                    console.log("User found with ID:", userId);
+                    console.log("User data:", userData);
+
+                    // Update player name display
+                    document.getElementById('playerName').textContent = username;
+
+                    // Load user's game data
+                    loadGameData();
+                })
+                .catch((error) => {
+                    console.error("Error fetching user data:", error);
+                });
+        }
+
+        // Load game data from Firebase
+        function loadGameData() {
+            if (!userId) return;
+
+            console.log("Loading game data for user:", userId);
+
+            // Get the games subcollection
+            db.collection('voters').doc(userId).collection('games')
+                .get()
+                .then((querySnapshot) => {
+                    // Check if there's a snake game document
+                    let snakeGameDoc = null;
+                    querySnapshot.forEach((doc) => {
+                        if (doc.id === 'snake') {
+                            snakeGameDoc = doc;
+                        }
+                    });
+
+                    if (snakeGameDoc) {
+                        const gameData = snakeGameDoc.data();
+                        level = gameData.snakelevel || 1;
+                        highScore = gameData.snakescore || 0;
+                        console.log("Loaded game data:", gameData);
+                    } else {
+                        // Create initial game data
+                        console.log("Creating initial game data");
+                        db.collection('voters').doc(userId).collection('games').doc('snake').set({
+                            snakelevel: 1,
+                            snakescore: 0
+                        });
+                    }
+
+                    updateLevelDisplay();
+                    updateHighScoreDisplay();
+                })
+                .catch((error) => {
+                    console.error("Error loading game data:", error);
+                });
+        }
+
+        // Update user data in Firebase
+        function updateUserData() {
+            if (!userId) {
+                console.error("No userId available for update");
+                return;
+            }
+
+            console.log("Updating user data for:", userId);
+            console.log("Current score:", playerScore, "Level:", level);
+
+            // First, get the current user document to see what fields exist
+            db.collection('voters').doc(userId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const currentData = doc.data();
+                        console.log("Current user data:", currentData);
+
+                        // Prepare update data with correct field names
+                        const updateData = {};
+
+                        // Check which field name exists for vote coins
+                        if (currentData.hasOwnProperty('voteCoins')) {
+                            updateData.voteCoins = firebase.firestore.FieldValue.increment(1);
+                        } else if (currentData.hasOwnProperty('voteCoin')) {
+                            updateData.voteCoin = firebase.firestore.FieldValue.increment(1);
+                        } else {
+                            // Default to voteCoins if neither exists
+                            updateData.voteCoins = firebase.firestore.FieldValue.increment(1);
+                        }
+
+                        // Always update points and gamesPlayed
+                        updateData.points = firebase.firestore.FieldValue.increment(1);
+                        updateData.gamesPlayed = firebase.firestore.FieldValue.increment(1);
+
+                        console.log("Update data:", updateData);
+
+                        // Update the user's vote coins and other fields
+                        return db.collection('voters').doc(userId).update(updateData);
+                    } else {
+                        console.error("User document does not exist!");
+                        throw new Error("User document not found");
+                    }
+                })
+                .then(() => {
+                    console.log("User data updated successfully");
+
+                    // Update the games subcollection
+                    return db.collection('voters').doc(userId).collection('games').doc('snake').set({
+                        snakelevel: level,
+                        snakescore: Math.max(highScore, playerScore)
+                    }, { merge: true });
+                })
+                .then(() => {
+                    console.log("Game data updated successfully");
+
+                    // Add activity
+                    return db.collection('voters').doc(userId).collection('activity').add({
+                        type: 'game',
+                        description: `Completed Snake Battle Level ${level} and earned 1 Vote Coin`,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    console.log("Activity logged successfully");
+                })
+                .catch((error) => {
+                    console.error("Error updating user data:", error);
+                });
+        }
+
+        // Handle keyboard input
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning || gamePaused) return;
+
+            // Prevent default arrow key behavior (scrolling) on desktop only
+            if (window.innerWidth >= 769 && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    if (playerDirection.y === 0) {
+                        playerDirection = { x: 0, y: -1 };
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (playerDirection.y === 0) {
+                        playerDirection = { x: 0, y: 1 };
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (playerDirection.x === 0) {
+                        playerDirection = { x: -1, y: 0 };
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (playerDirection.x === 0) {
+                        playerDirection = { x: 1, y: 0 };
+                    }
+                    break;
+            }
+        });
+
+        // Handle mobile controls
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!gameRunning || gamePaused) return;
+
+                const direction = btn.getAttribute('data-direction');
+
+                switch (direction) {
+                    case 'up':
+                        if (playerDirection.y === 0) {
+                            playerDirection = { x: 0, y: -1 };
+                        }
+                        break;
+                    case 'down':
+                        if (playerDirection.y === 0) {
+                            playerDirection = { x: 0, y: 1 };
+                        }
+                        break;
+                    case 'left':
+                        if (playerDirection.x === 0) {
+                            playerDirection = { x: -1, y: 0 };
+                        }
+                        break;
+                    case 'right':
+                        if (playerDirection.x === 0) {
+                            playerDirection = { x: 1, y: 0 };
+                        }
+                        break;
+                }
+            });
+        });
+
+        // Button event listeners
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('pauseBtn').addEventListener('click', pauseGame);
+        document.getElementById('resetBtn').addEventListener('click', resetGame);
+
+        // Back button
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'vote.html';
+        });
+
+        document.getElementById('retryBtn').addEventListener('click', () => {
+            document.getElementById('gameOverModal').style.display = 'none';
+            resetGame();
+            startGame();
+        });
+
+        document.getElementById('nextLevelBtn').addEventListener('click', () => {
+            document.getElementById('gameOverModal').style.display = 'none';
+            level++;
+            updateLevelDisplay();
+            resetGame();
+            startGame();
+        });
+
+        // Initialize page
+        window.addEventListener('load', () => {
+            // Hide loading overlay
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }, 1500);
+
+            // Fetch user data from Firebase
+            fetchUserData();
+
+            // Set canvas size
+            resizeCanvas();
+
+            // Initialize game
+            initGame();
+            draw();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+    </script>
+</body>
+
+</html>

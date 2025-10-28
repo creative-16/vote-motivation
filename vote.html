@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Your Vote - Blockchain Voting System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyBsqxp46x8mwXRpThRdpxsskRM1ie4PNCg",
+            authDomain: "vote-edb06.firebaseapp.com",
+            projectId: "vote-edb06",
+            storageBucket: "vote-edb06.appspot.com",
+            messagingSenderId: "916721565065",
+            appId: "1:916721565065:web:2a451c1b45173d8b127558",
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+        }
+
+        .jetbrains {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .candidate-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .candidate-card:hover::before {
+            left: 100%;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.1);
+        }
+
+        .vote-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .vote-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .vote-btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Blockchain Animation Container */
+        .blockchain-vote-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 40;
+            display: none;
+        }
+
+        .blockchain-vote-animation.active {
+            display: block;
+        }
+
+        .blockchain-block {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: 2px solid var(--accent-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+            animation: blockDrop 2s ease-in-out;
+        }
+
+        .blockchain-block::before,
+        .blockchain-block::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .blockchain-block::before {
+            left: -80px;
+        }
+
+        .blockchain-block::after {
+            right: -80px;
+        }
+
+        @keyframes blockDrop {
+            0% {
+                top: -100px;
+                opacity: 0;
+                transform: translateX(-50%) rotateY(0deg);
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateX(-50%) rotateY(180deg);
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100vh;
+                opacity: 0;
+                transform: translateX(-50%) rotateY(360deg);
+            }
+        }
+
+        .success-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-success);
+            border-radius: 50%;
+            animation: particleBurst 1s ease-out forwards;
+        }
+
+        @keyframes particleBurst {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--x), var(--y)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transition: width 0.5s ease;
+        }
+
+        .pulse-border {
+            position: relative;
+        }
+
+        .pulse-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-success));
+            border-radius: inherit;
+            opacity: 0;
+            animation: pulseBorder 2s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulseBorder {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.02);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Blockchain Vote Animation -->
+    <div class="blockchain-vote-animation" id="blockchainAnimation">
+        <div class="blockchain-block">
+            <i class="fas fa-cube text-white text-2xl"></i>
+        </div>
+    </div>
+
+    <!-- Success Particles -->
+    <div class="success-particles" id="successParticles"></div>
+
+    <!-- Navigation -->
+    <nav class="glass fixed top-0 w-full z-50 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="home.html">
+                <div class="flex items-center space-x-2">
+                    <i
+                        class="fas fa-rocket text-accent-primary text-2xl animate__animated animate__pulse animate__infinite"></i>
+                    <span class="text-text-primary font-bold text-xl orbitron">VOTE SPACE</span>
+                </div>
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="vote.html"><button id="voteBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-vote-yea"></i>
+                    </button></a>
+                <a href="profile.html"><button id="profileBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-user"></i>
+                    </button></a>
+                <a href="result.html"><button id="resultsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-chart-pie"></i>
+                    </button></a>
+                <a href="leaderboard.html"><button id="leaderboardBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-trophy"></i>
+                    </button></a>
+                <a href="settings.html"><button id="settingsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-cog"></i>
+                    </button></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Floating Action Button -->
+    <a href="result.html">
+        <div class="fab-nav" id="fabNav">
+            <i class="fas fa-compass text-primary-bg"></i>
+        </div>
+    </a>
+
+    <div class="container mx-auto px-4 pt-24 pb-12">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb mb-8">
+            <a href="home.html"><i class="fas fa-home mr-2"></i>Home</a>
+            <span class="breadcrumb-separator mx-2">/</span>
+            <span class="text-cyan-400">Voting Portal</span>
+        </div>
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                <span class="hero-gradient">Mine Vote Coins</span>
+            </h1>
+            <p class="text-gray-400">Play Games and earn VoteCoins to Vote</p>
+        </header>
+
+        <!-- Blockchain Status -->
+        <div class="game-selection-container">
+            <div class="game-grid">
+                <a href="snakebattle.html">
+                    <div class="game-card" data-game="snake">
+                        <div class="game-icon">
+                            <img src="./images/snake.jpg" alt="Snake Battle">
+                            <div class="game-overlay">
+                                <h3>Snake Battle</h3>
+                                <p>Classic snake with multiplayer</p>
+                            </div>
+                        </div>
+                        <div class="game-pulse"></div>
+                    </div>
+                </a>
+                <a href="tic.html">
+                    <div class="game-card" data-game="puzzle">
+                        <div class="game-icon">
+                            <img src="./images/tic.jpg" alt="Puzzle Quest">
+                            <div class="game-overlay">
+                                <h3>Tic-Tac-Toe</h3>
+                                <p>Defeat computer with tricks</p>
+                            </div>
+                        </div>
+                        <div class="game-pulse"></div>
+                    </div>
+                </a>
+                <a href="reaction.html">
+                    <div class="game-card" data-game="racing">
+                        <div class="game-icon">
+                            <img src="./images/reaction.jpg" alt="Crypto Racer">
+                            <div class="game-overlay">
+                                <h3>Reaction TIme</h3>
+                                <p>Select higlighted block with less time</p>
+                            </div>
+                        </div>
+                        <div class="game-pulse"></div>
+                    </div>
+                </a>
+                <a href="jigzaw.html">
+                    <div class="game-card" data-game="tower">
+                        <div class="game-icon">
+                            <img src="./images/jigzaw.jpg" alt="Tower Defense">
+                            <div class="game-overlay">
+                                <h3>Jigsaw Puzzle</h3>
+                                <p>Solve number puzzle</p>
+                            </div>
+                        </div>
+                        <div class="game-pulse"></div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="button-container">
+                <button
+                    class="vote-btn bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-lg transition transform hover:scale-105 shadow-lg"
+                    data-candidate="Alice">
+                    <i class="fas fa-cube mr-2"></i>MINED COINS: <span>0</span>
+                </button>
+            </div>
+        </div>
+
+        <style>
+            /* Add these styles to your existing CSS */
+            .button-container {
+                display: flex;
+                justify-content: center;
+                margin-top: 2rem;
+                width: 100%;
+            }
+
+            .vote-btn {
+                font-size: 1.2rem;
+                padding: 1rem 2rem;
+                min-width: 300px;
+                box-shadow: 0 4px 15px rgba(0, 200, 255, 0.3);
+                border: none;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .vote-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .vote-btn:hover::before {
+                left: 100%;
+            }
+
+            .vote-btn:active {
+                transform: scale(0.98);
+            }
+
+            /* Pulse animation for the button */
+            @keyframes pulse-button {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(0, 200, 255, 0.7);
+                }
+
+                70% {
+                    box-shadow: 0 0 0 10px rgba(0, 200, 255, 0);
+                }
+
+                100% {
+                    box-shadow: 0 0 0 0 rgba(0, 200, 255, 0);
+                }
+            }
+
+            .vote-btn {
+                animation: pulse-button 2s infinite;
+            }
+        </style>
+
+        <style>
+            .game-selection-container {
+                width: 100%;
+                margin-bottom: 2rem;
+            }
+
+            .game-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+
+            .game-card {
+                position: relative;
+                height: 180px;
+                background: rgba(20, 20, 30, 0.7);
+                border-radius: 16px;
+                overflow: hidden;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(100, 100, 120, 0.3);
+                backdrop-filter: blur(10px);
+            }
+
+            .game-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 10px 25px rgba(0, 200, 255, 0.3);
+                border-color: rgba(0, 200, 255, 0.5);
+            }
+
+            .game-card:active {
+                transform: translateY(-4px);
+                box-shadow: 0 5px 15px rgba(0, 200, 255, 0.2);
+            }
+
+            .game-icon {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .game-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: all 0.5s ease;
+            }
+
+            .game-card:hover .game-icon img {
+                transform: scale(1.1);
+                filter: brightness(0.7);
+            }
+
+            .game-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+                padding: 1.5rem 1rem 1rem;
+                transform: translateY(100%);
+                transition: all 0.3s ease;
+            }
+
+            .game-card:hover .game-overlay {
+                transform: translateY(0);
+            }
+
+            .game-overlay h3 {
+                color: #fff;
+                font-weight: bold;
+                margin-bottom: 0.25rem;
+                font-size: 1.1rem;
+            }
+
+            .game-overlay p {
+                color: #aaa;
+                font-size: 0.85rem;
+            }
+
+            .game-pulse {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, transparent, #00ffff, transparent);
+                transform: translateX(-100%);
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: translateX(-100%);
+                }
+
+                100% {
+                    transform: translateX(100%);
+                }
+            }
+
+            /* Glass effect for the container */
+            .game-selection-container {
+                background: rgba(20, 20, 30, 0.3);
+                border-radius: 16px;
+                padding: 1.5rem;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(100, 100, 120, 0.2);
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .game-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 1rem;
+                }
+
+                .game-card {
+                    height: 150px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .game-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const gameCards = document.querySelectorAll('.game-card');
+
+                gameCards.forEach(card => {
+                    // Add click event
+                    card.addEventListener('click', function () {
+                        const gameName = this.dataset.game;
+                        console.log(`Selected game: ${gameName}`);
+
+                        // Add ripple effect on click
+                        const ripple = document.createElement('div');
+                        ripple.classList.add('ripple');
+                        this.appendChild(ripple);
+
+                        // Remove ripple after animation completes
+                        setTimeout(() => {
+                            ripple.remove();
+                        }, 600);
+
+                        // You can add navigation logic here
+                        // window.location.href = `/games/${gameName}`;
+                    });
+
+                    // Add hover sound effect (optional)
+                    card.addEventListener('mouseenter', function () {
+                        // Play hover sound if available
+                        // playHoverSound();
+                    });
+                });
+
+                // Add ripple effect styles
+                const style = document.createElement('style');
+                style.textContent = `
+                .ripple {
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.5);
+                    transform: scale(0);
+                    animation: ripple-animation 0.6s ease-out;
+                    pointer-events: none;
+                }
+                
+                @keyframes ripple-animation {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+                document.head.appendChild(style);
+            });
+        </script>
+
+        <br><br>
+        <main class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class=" text-3xl font-bold text-white mb-4">SELECT CANDIDATE</h2>
+                <p class="text-gray-400">Your vote will be permanently recorded on the blockchain</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <!-- Candidate 1 -->
+                <div class="candidate-card glass rounded-2xl overflow-hidden">
+                    <div class="relative">
+                        <img src="./images/Kadakkal Chandran.jpg" alt="Alice" class="w-full h-64 object-cover">
+                        <div
+                            class="absolute top-4 right-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg">
+                            <span class="font-bold jetbrains">One</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-transparent p-4">
+                            <h3 class="text-2xl font-bold text-white">Kadakkal Chandran</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-400 mb-4 italic">"Initiated the bill: Right to Recall"</p>
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-white mb-3">Key Policies:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-shield-alt text-cyan-400 mr-3"></i>
+                                    <span>Sypathetic to people</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-link text-cyan-400 mr-3"></i>
+                                    <span>CCTV Surveillance in Goverment Sector</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-leaf text-cyan-400 mr-3"></i>
+                                    <span>Green Technology</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm text-gray-400 mb-2">
+                                <span>Blockchain Votes</span>
+                                <span id="aliceVoteCount" class="jetbrains">740</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2">
+                                <div id="aliceVoteBar" class="progress-fill h-2 rounded-full" style="width: 35%"></div>
+                            </div>
+                        </div>
+                        <button
+                            class="vote-btn w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105"
+                            data-candidate="Alice">
+                            <i class="fas fa-cube mr-2"></i>PAY VOTE COIN
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Candidate 2 -->
+                <div class="candidate-card glass rounded-2xl overflow-hidden">
+                    <div class="relative">
+                        <img src="./images/Mamachan.jpg" alt="Bob" class="w-full h-64 object-cover">
+                        <div
+                            class="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-2 rounded-lg">
+                            <span class="font-bold jetbrains">Vellimoonga</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-transparent p-4">
+                            <h3 class="text-2xl font-bold text-white">Mamachan</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-400 mb-4 italic">"Innovation through decentralized governance"</p>
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-white mb-3">Key Policies:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-rocket text-purple-400 mr-3"></i>
+                                    <span>Tech Innovation</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-coins text-purple-400 mr-3"></i>
+                                    <span>Crypto Economy</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-network-wired text-purple-400 mr-3"></i>
+                                    <span>Smart Contracts</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm text-gray-400 mb-2">
+                                <span>Blockchain Votes</span>
+                                <span id="bobVoteCount" class="jetbrains">287</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2">
+                                <div id="bobVoteBar" class="progress-fill h-2 rounded-full" style="width: 32%"></div>
+                            </div>
+                        </div>
+                        <button
+                            class="vote-btn w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105"
+                            data-candidate="Bob">
+                            <i class="fas fa-cube mr-2"></i>PAY VOTE COIN
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Candidate 3 -->
+                <div class="candidate-card glass rounded-2xl overflow-hidden">
+                    <div class="relative">
+                        <img src="./images/Ayamanam Sidharthan.jpg" alt="Charlie" class="w-full h-64 object-cover">
+                        <div
+                            class="absolute top-4 right-4 bg-gradient-to-r from-green-500 to-teal-600 text-white px-4 py-2 rounded-lg">
+                            <span class="font-bold jetbrains">ILS</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-transparent p-4">
+                            <h3 class="text-2xl font-bold text-white">Ayamanam Sidartan</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-400 mb-4 italic">"Community empowerment through decentralization"</p>
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-white mb-3">Key Policies:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-users text-green-400 mr-3"></i>
+                                    <span>Community DAO</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-home text-green-400 mr-3"></i>
+                                    <span>DeFi Housing</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fas fa-handshake text-green-400 mr-3"></i>
+                                    <span>Peer-to-Peer</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm text-gray-400 mb-2">
+                                <span>Blockchain Votes</span>
+                                <span id="charlieVoteCount" class="jetbrains">293</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2">
+                                <div id="charlieVoteBar" class="progress-fill h-2 rounded-full" style="width: 33%">
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            class="vote-btn w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105"
+                            data-candidate="Charlie">
+                            <i class="fas fa-cube mr-2"></i>PAY VOTE COIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="glass rounded-2xl p-6 mb-8">
+                <h3 class="text-xl font-bold text-white mb-4 jetbrains">TRANSACTION HISTORY</h3>
+                <div id="votingHistory" class="space-y-2">
+                    <p class="text-gray-400">No transactions yet. Mine your first vote block!</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4">
+                <a href="result.html"><button id="viewResultsBtn"
+                        class="glass hover:bg-white hover:bg-opacity-10 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-chart-pie mr-2"></i>VIEW LEDGER
+                    </button></aa>
+                    <a href="leaderboard.html"><button id="leaderboardBtn"
+                            class="glass hover:bg-white hover:bg-opacity-10 text-white font-bold py-3 px-6 rounded-lg transition transform hover:scale-105">
+                            <i class="fas fa-trophy mr-2"></i>LEADERBOARD
+                        </button></aa>
+            </div>
+        </main>
+    </div>
+
+    <!-- Vote Confirmation Modal -->
+    <div id="voteModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
+        <div class="glass rounded-2xl p-8 max-w-md w-full mx-4 text-center">
+            <div class="mb-6">
+                <div
+                    class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-white text-3xl"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2 jetbrains">BLOCK MINED!</h2>
+            <p class="text-gray-400 mb-6">Your vote for <span id="votedCandidate"
+                    class="text-cyan-400 font-bold"></span> has been recorded on the blockchain</p>
+            <div class="glass rounded-lg p-4 mb-6">
+                <p class="text-green-400 font-semibold mb-2">+10 Points Earned!</p>
+                <p class="text-gray-400 text-sm">Transaction ID: <span class="jetbrains text-xs"
+                        id="txId">0x7f9a...</span></p>
+                <p class="text-gray-400 text-sm">Votes Remaining: <span id="remainingVotes" class="font-bold"></span>
+                </p>
+            </div>
+            <button id="closeVoteModal" class="btn-primary">
+                CONTINUE
+            </button>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/vote.js"></script>
+</body>
+
+</html>

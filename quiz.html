@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Knowledge Hub - Indian Democracy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Dark Theme Default */
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #0f3460;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a8a8a8;
+            --accent: #e94560;
+            --accent-light: #ff4666;
+            --border: #2a2a4e;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --accent: #667eea;
+            --accent-light: #764ba2;
+            --border: #e1e8ed;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Glassmorphism Theme */
+        [data-theme="glass"] {
+            --bg-primary: rgba(17, 25, 40, 0.75);
+            --bg-secondary: rgba(17, 25, 40, 0.75);
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --accent: #f0f0f0;
+            --accent-light: #ffffff;
+            --border: rgba(255, 255, 255, 0.2);
+            --shadow: rgba(31, 38, 135, 0.37);
+        }
+
+        /* Neumorphism Theme */
+        [data-theme="neumorphism"] {
+            --bg-primary: #e0e5ec;
+            --bg-secondary: #e0e5ec;
+            --bg-card: #e0e5ec;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent: #667eea;
+            --accent-light: #764ba2;
+            --border: #e0e5ec;
+            --shadow: #a3b1c6;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .bg-card {
+            background-color: var(--bg-card);
+            transition: all 0.3s ease;
+        }
+
+        .text-primary {
+            color: var(--text-primary);
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .border-custom {
+            border-color: var(--border);
+        }
+
+        .card-shadow {
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        /* Glassmorphism specific styles */
+        [data-theme="glass"] .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Neumorphism specific styles */
+        [data-theme="neumorphism"] .neumorphism {
+            box-shadow: 9px 9px 16px #a3b1c6, -9px -9px 16px #ffffff;
+        }
+
+        [data-theme="neumorphism"] .neumorphism-inset {
+            box-shadow: inset 9px 9px 16px #a3b1c6, inset -9px -9px 16px #ffffff;
+        }
+
+        /* Gradient styles */
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Option card styles */
+        .option-card {
+            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            background-color: var(--bg-card);
+        }
+
+        .option-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+
+        .option-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.1) 0%, rgba(233, 69, 96, 0.2) 100%);
+        }
+
+        .option-card.correct {
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.2) 100%);
+            animation: correctPulse 0.5s ease;
+        }
+
+        .option-card.incorrect {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.2) 100%);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+            position: absolute;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip-trigger:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .leaderboard-item {
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(5px);
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.05) 0%, rgba(233, 69, 96, 0.1) 100%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Settings specific styles */
+        .settings-option {
+            transition: all 0.3s ease;
+        }
+
+        .settings-option:hover {
+            transform: translateX(5px);
+        }
+
+        .theme-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .theme-preview:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-preview.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .theme-dark {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+        }
+
+        .theme-light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+        }
+
+        .theme-glass {
+            background: linear-gradient(135deg, rgba(17, 25, 40, 0.75) 0%, rgba(17, 25, 40, 0.75) 100%);
+            position: relative;
+        }
+
+        .theme-glass::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 6px;
+        }
+
+        .theme-neumorphism {
+            background: #e0e5ec;
+            box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
+        }
+    </style>
+</head>
+
+<body data-theme="neumorphism">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 px-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-vote-yea text-3xl"></i>
+                <h1 class="text-2xl font-bold">Election Edu Hub</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" onclick="showSection('home')"
+                    class="hover:text-purple-200 transition cursor-pointer"><button id="homeBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-home"></i>
+                    </button></a>
+                <a href="#" onclick="showSection('leaderboard')"
+                    class="hover:text-purple-200 transition cursor-pointer"><button id="leaderboardBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-trophy"></i>
+                    </button></a>
+
+                <a href="#" onclick="showSection('resources')"
+                    class="hover:text-purple-200 transition cursor-pointer"><button id="resourcesBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-book-open"></i>
+                    </button></a>
+                <a href="#" onclick="showSection('about')"
+                    class="hover:text-purple-200 transition cursor-pointer"><button id="aboutBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-info-circle"></i>
+                    </button></a>
+
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-card shadow-lg">
+        <nav class="flex flex-col p-4 space-y-2">
+            <a href="#" onclick="showSection('home')" class="text-primary hover:text-purple-600 py-2">Home</a>
+            <a href="#" onclick="showSection('leaderboard')"
+                class="text-primary hover:text-purple-600 py-2">Leaderboard</a>
+            <a href="#" onclick="showSection('about')" class="text-primary hover:text-purple-600 py-2">About</a>
+            <a href="#" onclick="showSection('resources')" class="text-primary hover:text-purple-600 py-2">Resources</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Home/Quiz Section -->
+        <section id="homeSection" class="max-w-4xl mx-auto">
+            <!-- Quiz Introduction -->
+            <div id="intro" class="bg-card rounded-xl card-shadow p-8 mb-8 fade-in">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="mb-6 md:mb-0 md:mr-8">
+                        <h2 class="text-3xl font-bold text-primary mb-4">Test Your Indian Election Knowledge</h2>
+                        <p class="text-secondary mb-6">Challenge yourself with our interactive quiz about Indian voting
+                            processes, election history, and democratic principles. Learn while you play!</p>
+
+                        <!-- Quiz Settings -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-primary mb-2">Select Number of
+                                Questions:</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="selectQuestionCount(5)"
+                                    class="question-count-btn px-4 py-2 rounded-lg border-2 border-custom hover:border-purple-500 hover:bg-purple-50 transition">5
+                                    Questions</button>
+                                <button onclick="selectQuestionCount(10)"
+                                    class="question-count-btn px-4 py-2 rounded-lg border-2 border-custom hover:border-purple-500 hover:bg-purple-50 transition">10
+                                    Questions</button>
+                                <button onclick="selectQuestionCount(15)"
+                                    class="question-count-btn px-4 py-2 rounded-lg border-2 border-custom hover:border-purple-500 hover:bg-purple-50 transition">15
+                                    Questions</button>
+                                <button onclick="selectQuestionCount(20)"
+                                    class="question-count-btn px-4 py-2 rounded-lg border-2 border-custom hover:border-purple-500 hover:bg-purple-50 transition">20
+                                    Questions</button>
+                            </div>
+                            <p id="selectedCount" class="mt-2 text-sm text-purple-600 font-medium">Selected: 10
+                                questions</p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-4 mb-6">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-purple-600 mr-2"></i>
+                                <span class="text-primary">5-15 minutes</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-trophy text-purple-600 mr-2"></i>
+                                <span class="text-primary">Earn badges</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-line text-purple-600 mr-2"></i>
+                                <span class="text-primary">Track progress</span>
+                            </div>
+                        </div>
+                        <button onclick="startQuiz()"
+                            class="gradient-bg text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                            Start Quiz <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <img src="https://picsum.photos/seed/indian-voting/300/300.jpg" alt="Indian Voting"
+                            class="rounded-lg shadow-lg">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-card rounded-lg p-4 card-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-secondary">Total Quizzes Taken</p>
+                            <p class="text-2xl font-bold text-primary" id="totalQuizzes">0</p>
+                        </div>
+                        <i class="fas fa-clipboard-list text-3xl text-purple-500"></i>
+                    </div>
+                </div>
+                <div class="bg-card rounded-lg p-4 card-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-secondary">Best Score</p>
+                            <p class="text-2xl font-bold text-primary" id="bestScore">0%</p>
+                        </div>
+                        <i class="fas fa-star text-3xl text-yellow-500"></i>
+                    </div>
+                </div>
+                <div class="bg-card rounded-lg p-4 card-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-secondary">Current Streak</p>
+                            <p class="text-2xl font-bold text-primary" id="currentStreak">0</p>
+                        </div>
+                        <i class="fas fa-fire text-3xl text-orange-500"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Container -->
+        <section id="quizContainer" class="max-w-4xl mx-auto hidden">
+            <!-- Progress Bar -->
+            <div class="bg-card rounded-lg p-4 mb-6 card-shadow">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-primary">Progress</span>
+                    <span id="progressText" class="text-sm font-medium text-purple-600">1 of 10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progressBar" class="gradient-bg h-full rounded-full transition-all duration-500"
+                        style="width: 10%"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-card rounded-xl card-shadow p-8 mb-6">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-4">
+                            <span id="questionCategory"
+                                class="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full mr-3">Indian
+                                Elections</span>
+                            <div class="tooltip-trigger relative">
+                                <i class="fas fa-info-circle text-secondary cursor-help"></i>
+                                <div
+                                    class="tooltip absolute bg-gray-800 text-white text-xs rounded py-2 px-3 -top-8 left-0 w-48 z-10">
+                                    Learn about different aspects of Indian elections
+                                </div>
+                            </div>
+                        </div>
+                        <h3 id="questionText" class="text-xl font-semibold text-primary mb-2">What is the minimum voting
+                            age in India?</h3>
+                        <p id="questionHint" class="text-sm text-secondary italic hidden">This is a fundamental right in
+                            Indian democracy</p>
+                    </div>
+                    <div class="ml-4 flex space-x-2">
+                        <button onclick="showHint()" class="text-purple-600 hover:text-purple-700 transition">
+                            <i class="fas fa-lightbulb text-xl"></i>
+                        </button>
+                        <button onclick="skipQuestion()" class="text-secondary hover:text-primary transition">
+                            <i class="fas fa-forward text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Answer Options -->
+                <div id="optionsContainer" class="space-y-3">
+                    <!-- Options will be dynamically inserted here -->
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between items-center mt-8">
+                    <button onclick="previousQuestion()" id="prevButton"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    <div class="flex space-x-4">
+                        <span id="timer" class="text-secondary flex items-center">
+                            <i class="fas fa-clock mr-2"></i> <span id="timeDisplay">00:00</span>
+                        </span>
+                        <span id="scoreDisplay" class="text-green-600 font-medium">
+                            Score: <span id="currentScore">0</span>
+                        </span>
+                    </div>
+                    <button onclick="nextQuestion()" id="nextButton"
+                        class="gradient-bg text-white font-medium py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Learning Resources -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-book-open text-blue-500 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-blue-800">Did you know?</h4>
+                        <p id="funFact" class="text-sm text-blue-700 mt-1">India is the world's largest democracy with
+                            over 900 million eligible voters.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="max-w-4xl mx-auto hidden">
+            <div class="bg-card rounded-xl card-shadow p-8 text-center">
+                <div class="mb-6">
+                    <i id="resultIcon" class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>
+                    <h2 class="text-3xl font-bold text-primary mb-2">Quiz Complete!</h2>
+                    <p class="text-secondary">Here's how you did:</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <i class="fas fa-check-circle text-purple-600 text-2xl mb-2"></i>
+                        <p class="text-2xl font-bold text-purple-600" id="correctCount">8</p>
+                        <p class="text-sm text-secondary">Correct</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <i class="fas fa-percentage text-blue-600 text-2xl mb-2"></i>
+                        <p class="text-2xl font-bold text-blue-600" id="scorePercentage">80%</p>
+                        <p class="text-sm text-secondary">Score</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <i class="fas fa-clock text-green-600 text-2xl mb-2"></i>
+                        <p class="text-2xl font-bold text-green-600" id="timeTaken">03:45</p>
+                        <p class="text-sm text-secondary">Time</p>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-4">
+                        <i class="fas fa-fire text-orange-600 text-2xl mb-2"></i>
+                        <p class="text-2xl font-bold text-orange-600" id="streakCount">3</p>
+                        <p class="text-sm text-secondary">Streak</p>
+                    </div>
+                </div>
+
+                <div id="badgeContainer" class="mb-8">
+                    <!-- Badges will be dynamically inserted here -->
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+                    <h3 class="text-lg font-semibold text-primary mb-4">Review Your Answers</h3>
+                    <div id="reviewContainer" class="space-y-3 max-h-64 overflow-y-auto">
+                        <!-- Review items will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="resetQuiz()"
+                        class="gradient-bg text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-redo mr-2"></i> Retake Quiz
+                    </button>
+                    <button onclick="shareResults()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-share-alt mr-2"></i> Share Results
+                    </button>
+                    <button onclick="saveToLeaderboard()"
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-crown mr-2"></i> Save to Leaderboard
+                    </button>
+                    <button onclick="showSection('home')"
+                        class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-home mr-2"></i> Home
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboardSection" class="max-w-4xl mx-auto hidden">
+            <div class="bg-card rounded-xl card-shadow p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-primary">
+                        <i class="fas fa-crown text-yellow-500 mr-2"></i> Leaderboard
+                    </h2>
+                    <button onclick="clearLeaderboard()" class="text-red-500 hover:text-red-600 transition">
+                        <i class="fas fa-trash mr-2"></i> Clear All
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex space-x-2">
+                        <button onclick="filterLeaderboard('all')"
+                            class="filter-btn px-4 py-2 rounded-lg bg-purple-600 text-white">All Time</button>
+                        <button onclick="filterLeaderboard('today')"
+                            class="filter-btn px-4 py-2 rounded-lg bg-gray-200 text-gray-700">Today</button>
+                        <button onclick="filterLeaderboard('week')"
+                            class="filter-btn px-4 py-2 rounded-lg bg-gray-200 text-gray-700">This Week</button>
+                    </div>
+                </div>
+
+                <div id="leaderboardList" class="space-y-3">
+                    <!-- Leaderboard items will be dynamically inserted here -->
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button onclick="showSection('home')"
+                        class="gradient-bg text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Quiz
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="aboutSection" class="max-w-4xl mx-auto hidden">
+            <div class="bg-card rounded-xl card-shadow p-8">
+                <h2 class="text-3xl font-bold text-primary mb-6">About Indian Election Knowledge Hub</h2>
+                <div class="prose max-w-none">
+                    <p class="text-secondary mb-4">
+                        Welcome to the Indian Election Knowledge Hub, your premier destination for learning about
+                        democratic processes, voting systems, and electoral history in India.
+                    </p>
+                    <p class="text-secondary mb-4">
+                        Our interactive quiz platform is designed to educate and engage citizens of all ages about the
+                        fundamental principles of Indian democracy. Through carefully crafted questions and detailed
+                        explanations, we aim to increase civic awareness and participation.
+                    </p>
+                    <h3 class="text-xl font-semibold text-primary mt-6 mb-3">Features:</h3>
+                    <ul class="list-disc list-inside text-secondary space-y-2">
+                        <li>Comprehensive quiz covering various aspects of Indian elections</li>
+                        <li>Customizable quiz length to fit your schedule</li>
+                        <li>Real-time scoring and progress tracking</li>
+                        <li>Detailed explanations for all answers</li>
+                        <li>Compete with others on our leaderboard</li>
+                        <li>Earn badges and track your learning streak</li>
+                    </ul>
+                </div>
+                <div class="mt-8">
+                    <button onclick="showSection('home')"
+                        class="gradient-bg text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Quiz
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resourcesSection" class="max-w-4xl mx-auto hidden">
+            <div class="bg-card rounded-xl card-shadow p-8">
+                <h2 class="text-3xl font-bold text-primary mb-6">Learning Resources</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                        <i class="fas fa-book text-purple-600 text-2xl mb-3"></i>
+                        <h3 class="font-semibold text-primary mb-2">Indian Voting Guide</h3>
+                        <p class="text-sm text-secondary">Complete guide to Indian voting processes and procedures.</p>
+                        <button class="mt-3 text-purple-600 hover:text-purple-700 font-medium">Read More →</button>
+                    </div>
+                    <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                        <i class="fas fa-history text-blue-600 text-2xl mb-3"></i>
+                        <h3 class="font-semibold text-primary mb-2">Election History</h3>
+                        <p class="text-sm text-secondary">Learn about the evolution of Indian democratic elections.</p>
+                        <button class="mt-3 text-blue-600 hover:text-blue-700 font-medium">Read More →</button>
+                    </div>
+                    <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                        <i class="fas fa-globe text-green-600 text-2xl mb-3"></i>
+                        <h3 class="font-semibold text-primary mb-2">Electoral Systems</h3>
+                        <p class="text-sm text-secondary">Compare different electoral systems in India.</p>
+                        <button class="mt-3 text-green-600 hover:text-green-700 font-medium">Read More →</button>
+                    </div>
+                    <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                        <i class="fas fa-users text-orange-600 text-2xl mb-3"></i>
+                        <h3 class="font-semibold text-primary mb-2">Civic Engagement</h3>
+                        <p class="text-sm text-secondary">How to get involved in your community.</p>
+                        <button class="mt-3 text-orange-600 hover:text-orange-700 font-medium">Read More →</button>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <button onclick="showSection('home')"
+                        class="gradient-bg text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Quiz
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content bg-card rounded-xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-primary">Settings</h3>
+                <button onclick="closeSettings()" class="text-secondary hover:text-primary">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Theme Selection -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-primary mb-3">Theme</h4>
+                <div class="flex space-x-4">
+                    <div class="theme-preview theme-dark active" onclick="changeTheme('dark')" title="Dark"></div>
+                    <div class="theme-preview theme-light" onclick="changeTheme('light')" title="Light"></div>
+                    <div class="theme-preview theme-glass" onclick="changeTheme('glass')" title="Glassmorphism"></div>
+                    <div class="theme-preview theme-neumorphism" onclick="changeTheme('neumorphism')"
+                        title="Neumorphism"></div>
+                </div>
+            </div>
+
+            <!-- Design Options -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-primary mb-3">Design Options</h4>
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="animationsToggle" checked class="mr-3">
+                        <span class="text-primary">Enable Animations</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="soundToggle" class="mr-3">
+                        <span class="text-primary">Enable Sound Effects</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="autoAdvanceToggle" checked class="mr-3">
+                        <span class="text-primary">Auto-advance Questions</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Difficulty -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-primary mb-3">Quiz Difficulty</h4>
+                <select id="difficultySelect"
+                    class="w-full px-4 py-2 rounded-lg border border-custom bg-card text-primary">
+                    <option value="mixed">Mixed (Easy, Medium, Hard)</option>
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+
+            <!-- Question Focus -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-primary mb-3">Question Focus</h4>
+                <select id="focusSelect" class="w-full px-4 py-2 rounded-lg border border-custom bg-card text-primary">
+                    <option value="all">All Topics</option>
+                    <option value="history">History</option>
+                    <option value="process">Voting Process</option>
+                    <option value="systems">Electoral Systems</option>
+                    <option value="constitution">Constitution</option>
+                </select>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex space-x-3">
+                <button onclick="saveSettings()"
+                    class="flex-1 gradient-bg text-white font-semibold py-2 px-4 rounded-lg transition">
+                    Save Settings
+                </button>
+                <button onclick="resetSettings()"
+                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition">
+                    Reset to Default
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Name Entry Modal -->
+    <div id="nameModal" class="modal">
+        <div class="modal-content bg-card rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-primary mb-4">Enter Your Name</h3>
+            <p class="text-secondary mb-6">Save your score to the leaderboard</p>
+            <input type="text" id="playerName" placeholder="Enter your name"
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-purple-500 mb-4 bg-card text-primary">
+            <div class="flex space-x-3">
+                <button onclick="saveScore()"
+                    class="flex-1 gradient-bg text-white font-semibold py-2 px-4 rounded-lg transition">
+                    Save Score
+                </button>
+                <button onclick="closeModal()"
+                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-card text-primary py-8 px-4 mt-12">
+        <div class="container mx-auto text-center">
+            <p class="mb-2">&copy; 2025 Indian Election Commission. All rights reserved.</p>
+            <div class="flex justify-center space-x-4 mt-4">
+                <a href="#" class="hover:text-purple-400 transition"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-purple-400 transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-purple-400 transition"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-purple-400 transition"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Indian Election Quiz Data
+        const indianQuizData = [
+            {
+                question: "What is the minimum voting age in India?",
+                options: ["16 years", "18 years", "21 years", "25 years"],
+                correct: 1,
+                category: "Voting Process",
+                hint: "This is a fundamental right in Indian democracy",
+                explanation: "The minimum voting age in India is 18 years, as established by the 61st Constitutional Amendment Act in 1988."
+            },
+            {
+                question: "Which constitutional amendment lowered the voting age from 21 to 18 in India?",
+                options: ["52nd Amendment", "61st Amendment", "73rd Amendment", "86th Amendment"],
+                correct: 1,
+                category: "Constitution",
+                hint: "This amendment was passed in 1988",
+                explanation: "The 61st Constitutional Amendment Act, 1988 lowered the voting age from 21 to 18 years in India."
+            },
+            {
+                question: "Who appoints the Chief Election Commissioner of India?",
+                options: ["President", "Prime Minister", "Chief Justice of India", "Parliament"],
+                correct: 0,
+                category: "Electoral Systems",
+                hint: "This is a constitutional appointment",
+                explanation: "The President of India appoints the Chief Election Commissioner and other Election Commissioners."
+            },
+            {
+                question: "What is the term of the Chief Election Commissioner of India?",
+                options: ["3 years", "5 years", "6 years", "Until age 65"],
+                correct: 2,
+                category: "Electoral Systems",
+                hint: "It's a fixed term or until retirement age",
+                explanation: "The Chief Election Commissioner of India has a term of 6 years or until the age of 65, whichever is earlier."
+            },
+            {
+                question: "Which was the first general election held in independent India?",
+                options: ["1947-48", "1951-52", "1957", "1962"],
+                correct: 1,
+                category: "History",
+                hint: "It took place a few years after independence",
+                explanation: "The first general elections in independent India were held from 25 October 1951 to 21 February 1952."
+            },
+            {
+                question: "What is the symbol of the Election Commission of India?",
+                options: ["Lotus", "Ashoka Chakra", "Wheel", "None of the above"],
+                correct: 2,
+                category: "Electoral Systems",
+                hint: "It represents progress and movement",
+                explanation: "The symbol of the Election Commission of India is a wheel, representing progress and forward movement."
+            },
+            {
+                question: "Which article of the Indian Constitution deals with elections?",
+                options: ["Article 324", "Article 326", "Article 370", "Both 324 and 326"],
+                correct: 3,
+                category: "Constitution",
+                hint: "Multiple articles deal with different aspects of elections",
+                explanation: "Article 324 deals with the establishment of the Election Commission, while Article 326 deals with elections to the House of the People and Assemblies."
+            },
+            {
+                question: "What is the purpose of NOTA (None of the Above) option in Indian elections?",
+                options: ["To reject all candidates", "To show dissatisfaction", "To maintain secrecy", "All of the above"],
+                correct: 3,
+                category: "Voting Process",
+                hint: "It serves multiple purposes in a democracy",
+                explanation: "NOTA allows voters to reject all candidates while maintaining the secrecy of their ballot, showing dissatisfaction with available options."
+            },
+            {
+                question: "When was the Electronic Voting Machine (EVM) first used in Indian elections?",
+                options: ["1982", "1992", "1998", "2004"],
+                correct: 0,
+                category: "History",
+                hint: "It was first used in a small number of constituencies",
+                explanation: "EVMs were first used on a limited basis in the election to the Kerala Legislative Assembly in 1982."
+            },
+            {
+                question: "What is the minimum age to become a member of Lok Sabha?",
+                options: ["21 years", "25 years", "30 years", "35 years"],
+                correct: 1,
+                category: "Constitution",
+                hint: "It's younger than the requirement for Rajya Sabha",
+                explanation: "The minimum age to become a member of Lok Sabha is 25 years, while for Rajya Sabha it's 30 years."
+            },
+            {
+                question: "Which system of election is followed for Lok Sabha?",
+                options: ["Proportional representation", "First-past-the-post", "Single transferable vote", "Mixed system"],
+                correct: 1,
+                category: "Electoral Systems",
+                hint: "It's a simple majority system",
+                explanation: "India follows the First-past-the-post system for elections to Lok Sabha, where the candidate with the most votes wins."
+            },
+            {
+                question: "Who conducts elections to the state legislatures in India?",
+                options: ["State Election Commission", "Election Commission of India", "Chief Minister", "Governor"],
+                correct: 1,
+                category: "Electoral Systems",
+                hint: "It's a central constitutional body",
+                explanation: "The Election Commission of India conducts elections to the state legislatures, not the State Election Commission."
+            },
+            {
+                question: "What is the maximum strength of Lok Sabha as per the Constitution?",
+                options: ["525", "543", "552", "590"],
+                correct: 2,
+                category: "Constitution",
+                hint: "It's more than the current strength",
+                explanation: "The Constitution provides for a maximum of 552 members in Lok Sabha, though the current strength is 543."
+            },
+            {
+                question: "Which amendment introduced the system of anti-defection?",
+                options: ["48th Amendment", "52nd Amendment", "61st Amendment", "73rd Amendment"],
+                correct: 1,
+                category: "Constitution",
+                hint: "It's also known as the Anti-Defection Law",
+                explanation: "The 52nd Amendment Act, 1985 introduced the system of anti-defection through the Tenth Schedule of the Constitution."
+            },
+            {
+                question: "What is the voting percentage in the 2019 Lok Sabha elections?",
+                options: ["61.4%", "66.4%", "71.4%", "76.4%"],
+                correct: 1,
+                category: "History",
+                hint: "It was the highest ever at that time",
+                explanation: "The 2019 Lok Sabha elections recorded a voter turnout of 66.4%, the highest ever in Indian parliamentary elections."
+            },
+            {
+                question: "Which state/UT has the highest number of Lok Sabha seats?",
+                options: ["Maharashtra", "West Bengal", "Uttar Pradesh", "Madhya Pradesh"],
+                correct: 2,
+                category: "Electoral Systems",
+                hint: "It's the most populous state",
+                explanation: "Uttar Pradesh has the highest number of Lok Sabha seats with 80 constituencies."
+            },
+            {
+                question: "What is the model code of conduct?",
+                options: ["A set of guidelines for political parties", "A law governing elections", "A rule for voters", "A media guideline"],
+                correct: 0,
+                category: "Voting Process",
+                hint: "It's enforced by the Election Commission",
+                explanation: "The Model Code of Conduct is a set of guidelines issued by the Election Commission for political parties and candidates to follow during elections."
+            },
+            {
+                question: "When were the first elections to Rajya Sabha held?",
+                options: ["1947", "1950", "1952", "1956"],
+                correct: 2,
+                category: "History",
+                hint: "It was after the first Lok Sabha elections",
+                explanation: "The first elections to Rajya Sabha were held in 1952, after the first general elections to Lok Sabha."
+            },
+            {
+                question: "What is the purpose of a voter ID card in India?",
+                options: ["Proof of identity", "Proof of address", "Proof of citizenship", "All of the above"],
+                correct: 3,
+                category: "Voting Process",
+                hint: "It serves multiple purposes",
+                explanation: "The voter ID card serves as proof of identity, address, and citizenship, and is essential for voting in elections."
+            },
+            {
+                question: "Which constitutional body is responsible for delimitation of constituencies?",
+                options: ["Election Commission", "Delimitation Commission", "Parliament", "Supreme Court"],
+                correct: 1,
+                category: "Electoral Systems",
+                hint: "It's a special commission for this purpose",
+                explanation: "The Delimitation Commission is responsible for redrawing the boundaries of parliamentary and assembly constituencies."
+            },
+            {
+                question: "What is the minimum age to become a member of Rajya Sabha?",
+                options: ["21 years", "25 years", "30 years", "35 years"],
+                correct: 2,
+                category: "Constitution",
+                hint: "It's older than the requirement for Lok Sabha",
+                explanation: "The minimum age to become a member of Rajya Sabha is 30 years, while for Lok Sabha it's 25 years."
+            },
+            {
+                question: "Which article provides for free and fair elections?",
+                options: ["Article 321", "Article 324", "Article 326", "Article 329"],
+                correct: 1,
+                category: "Constitution",
+                hint: "It deals with the Election Commission",
+                explanation: "Article 324 provides for the establishment of the Election Commission to ensure free and fair elections in the country."
+            },
+            {
+                question: "What is the maximum period between two consecutive sessions of Parliament?",
+                options: ["3 months", "4 months", "5 months", "6 months"],
+                correct: 3,
+                category: "Constitution",
+                hint: "It's mentioned in Article 85",
+                explanation: "The maximum period between two consecutive sessions of Parliament cannot exceed six months as per Article 85 of the Constitution."
+            },
+            {
+                question: "Which amendment introduced voting rights for armed forces personnel?",
+                options: ["48th Amendment", "52nd Amendment", "61st Amendment", "73rd Amendment"],
+                correct: 0,
+                category: "Constitution",
+                hint: "It was passed in 1984",
+                explanation: "The 48th Amendment Act, 1984 introduced voting rights for armed forces personnel through proxy voting."
+            },
+            {
+                question: "What is the purpose of the VVPAT (Voter Verifiable Paper Audit Trail) system?",
+                options: ["To count votes faster", "To verify voting choice", "To prevent fraud", "To store data"],
+                correct: 1,
+                category: "Voting Process",
+                hint: "It provides a physical record of the vote",
+                explanation: "VVPAT allows voters to verify that their vote has been cast correctly by providing a physical paper trail of the vote."
+            },
+            {
+                question: "Which state has the highest voter turnout in the 2019 Lok Sabha elections?",
+                options: ["Nagaland", "Sikkim", "Lakshadweep", "Tripura"],
+                correct: 2,
+                category: "History",
+                hint: "It's a Union Territory",
+                explanation: "Lakshadweep recorded the highest voter turnout of 85.3% in the 2019 Lok Sabha elections."
+            }
+        ];
+
+        // Quiz State
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = [];
+        let startTime = null;
+        let timerInterval = null;
+        let hintsUsed = 0;
+        let selectedQuestionCount = 10;
+        let currentQuizQuestions = [];
+        let skippedQuestions = [];
+        let currentTheme = 'dark';
+        let settings = {
+            animations: true,
+            sound: false,
+            autoAdvance: true,
+            difficulty: 'mixed',
+            focus: 'all'
+        };
+
+        // Local Storage Keys
+        const LEADERBOARD_KEY = 'indianElectionQuizLeaderboard';
+        const STATS_KEY = 'indianElectionQuizStats';
+        const SETTINGS_KEY = 'indianElectionQuizSettings';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            loadStats();
+            loadLeaderboard();
+            selectQuestionCount(10);
+            applyTheme(currentTheme);
+        });
+
+        // Section Navigation
+        function showSection(section) {
+            // Hide all sections
+            document.getElementById('homeSection').classList.add('hidden');
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('leaderboardSection').classList.add('hidden');
+            document.getElementById('aboutSection').classList.add('hidden');
+            document.getElementById('resourcesSection').classList.add('hidden');
+
+            // Show selected section
+            switch (section) {
+                case 'home':
+                    document.getElementById('homeSection').classList.remove('hidden');
+                    break;
+                case 'leaderboard':
+                    document.getElementById('leaderboardSection').classList.remove('hidden');
+                    loadLeaderboard();
+                    break;
+                case 'about':
+                    document.getElementById('aboutSection').classList.remove('hidden');
+                    break;
+                case 'resources':
+                    document.getElementById('resourcesSection').classList.remove('hidden');
+                    break;
+            }
+
+            // Close mobile menu
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Select Question Count
+        function selectQuestionCount(count) {
+            selectedQuestionCount = count;
+            document.getElementById('selectedCount').textContent = `Selected: ${count} questions`;
+
+            // Update button styles
+            document.querySelectorAll('.question-count-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('border-custom');
+            });
+            event.target.classList.remove('border-custom');
+            event.target.classList.add('bg-purple-600', 'text-white');
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            // Filter questions based on settings
+            let filteredQuestions = [...indianQuizData];
+
+            // Apply focus filter
+            if (settings.focus !== 'all') {
+                filteredQuestions = filteredQuestions.filter(q =>
+                    q.category.toLowerCase().includes(settings.focus.toLowerCase())
+                );
+            }
+
+            // Shuffle and select questions
+            const shuffled = filteredQuestions.sort(() => Math.random() - 0.5);
+            currentQuizQuestions = shuffled.slice(0, selectedQuestionCount);
+
+            // Reset state
+            currentQuestion = 0;
+            score = 0;
+            answers = [];
+            hintsUsed = 0;
+            skippedQuestions = [];
+            startTime = Date.now();
+
+            // Show quiz container
+            document.getElementById('homeSection').classList.add('hidden');
+            document.getElementById('quizContainer').classList.remove('hidden');
+
+            // Start timer and load first question
+            startTimer();
+            loadQuestion();
+        }
+
+        // Load Question
+        function loadQuestion() {
+            const question = currentQuizQuestions[currentQuestion];
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('questionCategory').textContent = question.category;
+            document.getElementById('questionHint').textContent = question.hint;
+            document.getElementById('questionHint').classList.add('hidden');
+            document.getElementById('progressText').textContent = `${currentQuestion + 1} of ${currentQuizQuestions.length}`;
+            document.getElementById('progressBar').style.width = `${((currentQuestion + 1) / currentQuizQuestions.length) * 100}%`;
+            document.getElementById('currentScore').textContent = score;
+
+            // Load options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const optionCard = document.createElement('div');
+                optionCard.className = 'option-card bg-card border-2 border-custom rounded-lg p-4 cursor-pointer flex items-center';
+                optionCard.innerHTML = `
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                        <span class="text-gray-600 font-semibold">${String.fromCharCode(65 + index)}</span>
+                    </div>
+                    <p class="text-primary">${option}</p>
+                `;
+                optionCard.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionCard);
+            });
+
+            // Update navigation buttons
+            document.getElementById('prevButton').disabled = currentQuestion === 0;
+            document.getElementById('nextButton').disabled = answers[currentQuestion] === undefined;
+
+            // Update fun fact
+            const funFacts = [
+                "India is the world's largest democracy with over 900 million eligible voters.",
+                "The Election Commission of India was established on January 25, 1950.",
+                "The first voter of independent India was Shyam Saran Negi of Himachal Pradesh.",
+                "India uses Electronic Voting Machines (EVMs) since 1998 for all elections.",
+                "The symbol of the Election Commission of India is a wheel, representing progress.",
+                "NOTA (None of the Above) option was first introduced in India in 2013.",
+                "The longest-serving Chief Election Commissioner of India was S.P. Sen Verma.",
+                "India has a multi-party system with over 2000 registered political parties.",
+                "The first woman to become Chief Election Commissioner was R. B. Sreekumar.",
+                "The Election Commission has the power to disqualify candidates for electoral malpractices."
+            ];
+            document.getElementById('funFact').textContent = funFacts[Math.floor(Math.random() * funFacts.length)];
+        }
+
+        // Select Option
+        function selectOption(index) {
+            const optionCards = document.querySelectorAll('.option-card');
+            const question = currentQuizQuestions[currentQuestion];
+
+            // Clear previous selections
+            optionCards.forEach(card => {
+                card.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            // Mark selected
+            optionCards[index].classList.add('selected');
+            answers[currentQuestion] = index;
+
+            // Show correct/incorrect feedback
+            setTimeout(() => {
+                if (index === question.correct) {
+                    optionCards[index].classList.add('correct');
+                    score++;
+                    document.getElementById('currentScore').textContent = score;
+                } else {
+                    optionCards[index].classList.add('incorrect');
+                    optionCards[question.correct].classList.add('correct');
+                }
+            }, 300);
+
+            // Enable next button
+            document.getElementById('nextButton').disabled = false;
+
+            // Auto-advance after delay if enabled
+            if (settings.autoAdvance) {
+                setTimeout(() => {
+                    if (currentQuestion < currentQuizQuestions.length - 1) {
+                        nextQuestion();
+                    }
+                }, 1500);
+            }
+        }
+
+        // Navigation
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+
+                // Restore selected option if exists
+                if (answers[currentQuestion] !== undefined) {
+                    const optionCards = document.querySelectorAll('.option-card');
+                    optionCards[answers[currentQuestion]].classList.add('selected');
+                    document.getElementById('nextButton').disabled = false;
+                }
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < currentQuizQuestions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+
+                // Restore selected option if exists
+                if (answers[currentQuestion] !== undefined) {
+                    const optionCards = document.querySelectorAll('.option-card');
+                    optionCards[answers[currentQuestion]].classList.add('selected');
+                    document.getElementById('nextButton').disabled = false;
+                }
+            } else {
+                showResults();
+            }
+        }
+
+        // Skip Question
+        function skipQuestion() {
+            if (answers[currentQuestion] === undefined) {
+                skippedQuestions.push(currentQuestion);
+                answers[currentQuestion] = -1; // Mark as skipped
+            }
+
+            if (currentQuestion < currentQuizQuestions.length - 1) {
+                nextQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Show Hint
+        function showHint() {
+            const hint = document.getElementById('questionHint');
+            hint.classList.remove('hidden');
+            hintsUsed++;
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timeDisplay').textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Show Results
+        function showResults() {
+            stopTimer();
+
+            // Calculate score
+            const correctAnswers = answers.reduce((acc, answer, index) => {
+                return acc + (answer === currentQuizQuestions[index].correct ? 1 : 0);
+            }, 0);
+
+            const percentage = Math.round((correctAnswers / currentQuizQuestions.length) * 100);
+            const timeTaken = document.getElementById('timeDisplay').textContent;
+
+            // Update results display
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('scorePercentage').textContent = `${percentage}%`;
+            document.getElementById('timeTaken').textContent = timeTaken;
+
+            // Update streak
+            const stats = getStats();
+            const newStreak = percentage >= 60 ? stats.currentStreak + 1 : 0;
+            document.getElementById('streakCount').textContent = newStreak;
+
+            // Update result icon based on performance
+            const resultIcon = document.getElementById('resultIcon');
+            if (percentage >= 90) {
+                resultIcon.className = 'fas fa-trophy text-6xl text-yellow-500 mb-4';
+            } else if (percentage >= 70) {
+                resultIcon.className = 'fas fa-medal text-6xl text-gray-400 mb-4';
+            } else if (percentage >= 50) {
+                resultIcon.className = 'fas fa-graduation-cap text-6xl text-blue-500 mb-4';
+            } else {
+                resultIcon.className = 'fas fa-book text-6xl text-green-500 mb-4';
+            }
+
+            // Generate badges
+            generateBadges(percentage);
+
+            // Generate review
+            generateReview();
+
+            // Update stats
+            updateStats(correctAnswers, percentage, newStreak);
+
+            // Show results section
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+
+            // Add confetti for high scores
+            if (percentage >= 80) {
+                createConfetti();
+            }
+        }
+
+        // Generate Badges
+        function generateBadges(percentage) {
+            const badgeContainer = document.getElementById('badgeContainer');
+            badgeContainer.innerHTML = '<h3 class="text-lg font-semibold text-primary mb-4">Badges Earned</h3>';
+
+            const badges = [];
+
+            if (percentage === 100) {
+                badges.push({ icon: 'fa-star', color: 'text-yellow-500', name: 'Perfect Score' });
+            } else if (percentage >= 90) {
+                badges.push({ icon: 'fa-trophy', color: 'text-purple-500', name: 'Expert' });
+            } else if (percentage >= 70) {
+                badges.push({ icon: 'fa-award', color: 'text-blue-500', name: 'Knowledgeable' });
+            } else if (percentage >= 50) {
+                badges.push({ icon: 'fa-book-reader', color: 'text-green-500', name: 'Learner' });
+            }
+
+            if (hintsUsed === 0) {
+                badges.push({ icon: 'fa-lightbulb', color: 'text-orange-500', name: 'Independent Thinker' });
+            }
+
+            if (skippedQuestions.length === 0) {
+                badges.push({ icon: 'fa-check-double', color: 'text-indigo-500', name: 'Completed All' });
+            }
+
+            const badgeGrid = document.createElement('div');
+            badgeGrid.className = 'flex flex-wrap justify-center gap-4';
+
+            badges.forEach(badge => {
+                const badgeElement = document.createElement('div');
+                badgeElement.className = 'bg-gray-100 rounded-lg p-4 text-center';
+                badgeElement.innerHTML = `
+                    <i class="fas ${badge.icon} ${badge.color} text-3xl mb-2"></i>
+                    <p class="text-sm font-medium text-primary">${badge.name}</p>
+                `;
+                badgeGrid.appendChild(badgeElement);
+            });
+
+            badgeContainer.appendChild(badgeGrid);
+        }
+
+        // Generate Review
+        function generateReview() {
+            const reviewContainer = document.getElementById('reviewContainer');
+            reviewContainer.innerHTML = '';
+
+            currentQuizQuestions.forEach((question, index) => {
+                const userAnswer = answers[index];
+                const isCorrect = userAnswer === question.correct;
+                const isSkipped = userAnswer === -1;
+
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `flex items-start p-3 rounded-lg ${isCorrect ? 'bg-green-50' : isSkipped ? 'bg-gray-50' : 'bg-red-50'}`;
+                reviewItem.innerHTML = `
+                    <div class="flex-shrink-0 mr-3">
+                        <i class="fas ${isCorrect ? 'fa-check-circle text-green-500' : isSkipped ? 'fa-forward text-gray-500' : 'fa-times-circle text-red-500'} text-xl"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-sm font-medium text-primary mb-1">Q${index + 1}: ${question.question}</p>
+                        ${!isSkipped ? `<p class="text-xs text-secondary">Your answer: ${question.options[userAnswer]}</p>` : '<p class="text-xs text-secondary italic">Question skipped</p>'}
+                        ${!isCorrect && !isSkipped ? `<p class="text-xs text-green-600">Correct answer: ${question.options[question.correct]}</p>` : ''}
+                        <p class="text-xs text-secondary mt-1">${question.explanation}</p>
+                    </div>
+                `;
+                reviewContainer.appendChild(reviewItem);
+            });
+        }
+
+        // Create Confetti
+        function createConfetti() {
+            if (!settings.animations) return;
+
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7'][Math.floor(Math.random() * 5)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        // Reset Quiz
+        function resetQuiz() {
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('homeSection').classList.remove('hidden');
+            stopTimer();
+            document.getElementById('timeDisplay').textContent = '00:00';
+        }
+
+        // Share Results
+        function shareResults() {
+            const percentage = Math.round((score / currentQuizQuestions.length) * 100);
+            const shareText = `I just scored ${percentage}% on the Indian Election Knowledge Quiz! Test your knowledge about Indian democracy and voting processes.`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Indian Election Knowledge Quiz Results',
+                    text: shareText,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('Results copied to clipboard!');
+                });
+            }
+        }
+
+        // Stats Management
+        function getStats() {
+            const stats = localStorage.getItem(STATS_KEY);
+            return stats ? JSON.parse(stats) : { totalQuizzes: 0, bestScore: 0, currentStreak: 0 };
+        }
+
+        function updateStats(correct, percentage, streak) {
+            const stats = getStats();
+            stats.totalQuizzes++;
+            stats.bestScore = Math.max(stats.bestScore, percentage);
+            stats.currentStreak = streak;
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+            loadStats();
+        }
+
+        function loadStats() {
+            const stats = getStats();
+            document.getElementById('totalQuizzes').textContent = stats.totalQuizzes;
+            document.getElementById('bestScore').textContent = stats.bestScore + '%';
+            document.getElementById('currentStreak').textContent = stats.currentStreak;
+        }
+
+        // Leaderboard Management
+        function saveToLeaderboard() {
+            document.getElementById('nameModal').classList.add('active');
+        }
+
+        function saveScore() {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('Please enter your name');
+                return;
+            }
+
+            const percentage = Math.round((score / currentQuizQuestions.length) * 100);
+            const timeTaken = document.getElementById('timeDisplay').textContent;
+
+            const leaderboard = getLeaderboard();
+            const entry = {
+                name: playerName,
+                score: percentage,
+                correct: score,
+                total: currentQuizQuestions.length,
+                time: timeTaken,
+                date: new Date().toISOString(),
+                questions: selectedQuestionCount
+            };
+
+            leaderboard.push(entry);
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard.splice(20); // Keep only top 20
+
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+
+            closeModal();
+            showSection('leaderboard');
+            alert('Score saved to leaderboard!');
+        }
+
+        function getLeaderboard() {
+            const leaderboard = localStorage.getItem(LEADERBOARD_KEY);
+            return leaderboard ? JSON.parse(leaderboard) : [];
+        }
+
+        function loadLeaderboard(filter = 'all') {
+            const leaderboard = getLeaderboard();
+            const leaderboardList = document.getElementById('leaderboardList');
+
+            let filteredLeaderboard = leaderboard;
+            const now = new Date();
+
+            if (filter === 'today') {
+                filteredLeaderboard = leaderboard.filter(entry => {
+                    const entryDate = new Date(entry.date);
+                    return entryDate.toDateString() === now.toDateString();
+                });
+            } else if (filter === 'week') {
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filteredLeaderboard = leaderboard.filter(entry => {
+                    const entryDate = new Date(entry.date);
+                    return entryDate >= weekAgo;
+                });
+            }
+
+            if (filteredLeaderboard.length === 0) {
+                leaderboardList.innerHTML = '<p class="text-center text-secondary py-8">No scores yet. Be the first to complete the quiz!</p>';
+                return;
+            }
+
+            leaderboardList.innerHTML = '';
+            filteredLeaderboard.slice(0, 10).forEach((entry, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item flex items-center justify-between p-4 rounded-lg border border-custom';
+
+                let medal = '';
+                if (index === 0) medal = '<i class="fas fa-medal text-yellow-500 text-xl"></i>';
+                else if (index === 1) medal = '<i class="fas fa-medal text-gray-400 text-xl"></i>';
+                else if (index === 2) medal = '<i class="fas fa-medal text-orange-600 text-xl"></i>';
+                else medal = `<span class="text-secondary font-bold">${index + 1}</span>`;
+
+                item.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="w-8 text-center">${medal}</div>
+                        <div>
+                            <p class="font-semibold text-primary">${entry.name}</p>
+                            <p class="text-xs text-secondary">${entry.correct}/${entry.total} correct • ${entry.questions} questions</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-purple-600">${entry.score}%</p>
+                        <p class="text-xs text-secondary">${entry.time}</p>
+                    </div>
+                `;
+
+                leaderboardList.appendChild(item);
+            });
+        }
+
+        function filterLeaderboard(filter) {
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-purple-600', 'text-white');
+
+            loadLeaderboard(filter);
+        }
+
+        function clearLeaderboard() {
+            if (confirm('Are you sure you want to clear all leaderboard entries?')) {
+                localStorage.removeItem(LEADERBOARD_KEY);
+                loadLeaderboard();
+            }
+        }
+
+        // Modal Management
+        function closeModal() {
+            document.getElementById('nameModal').classList.remove('active');
+            document.getElementById('playerName').value = '';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('nameModal').addEventListener('click', (e) => {
+            if (e.target.id === 'nameModal') {
+                closeModal();
+            }
+        });
+
+        // Settings Management
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+            loadSettingsToUI();
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem(SETTINGS_KEY);
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                currentTheme = settings.theme || 'neumorphism';
+            }
+        }
+
+        function loadSettingsToUI() {
+            document.getElementById('animationsToggle').checked = settings.animations;
+            document.getElementById('soundToggle').checked = settings.sound;
+            document.getElementById('autoAdvanceToggle').checked = settings.autoAdvance;
+            document.getElementById('difficultySelect').value = settings.difficulty;
+            document.getElementById('focusSelect').value = settings.focus;
+
+            // Update theme preview
+            document.querySelectorAll('.theme-preview').forEach(preview => {
+                preview.classList.remove('active');
+            });
+            document.querySelector(`.theme-${currentTheme}`).classList.add('active');
+        }
+
+        function saveSettings() {
+            settings.animations = document.getElementById('animationsToggle').checked;
+            settings.sound = document.getElementById('soundToggle').checked;
+            settings.autoAdvance = document.getElementById('autoAdvanceToggle').checked;
+            settings.difficulty = document.getElementById('difficultySelect').value;
+            settings.focus = document.getElementById('focusSelect').value;
+
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            closeSettings();
+            alert('Settings saved successfully!');
+        }
+
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default?')) {
+                settings = {
+                    animations: true,
+                    sound: false,
+                    autoAdvance: true,
+                    difficulty: 'mixed',
+                    focus: 'all',
+                    theme: 'neumorphism'
+                };
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+                currentTheme = 'neumorphism';
+                applyTheme('neumorphism');
+                loadSettingsToUI();
+                alert('Settings reset to default!');
+            }
+        }
+
+        function changeTheme(theme) {
+            currentTheme = theme;
+            applyTheme(theme);
+
+            // Update theme preview
+            document.querySelectorAll('.theme-preview').forEach(preview => {
+                preview.classList.remove('active');
+            });
+            document.querySelector(`.theme-${theme}`).classList.add('active');
+        }
+
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+
+            // Apply specific styles for neumorphism
+            if (theme === 'neumorphism') {
+                document.querySelectorAll('.bg-card').forEach(element => {
+                    element.classList.add('neumorphism');
+                });
+            } else {
+                document.querySelectorAll('.bg-card').forEach(element => {
+                    element.classList.remove('neumorphism');
+                });
+            }
+
+            // Apply specific styles for glassmorphism
+            if (theme === 'glass') {
+                document.querySelectorAll('.bg-card').forEach(element => {
+                    element.classList.add('glass-effect');
+                });
+            } else {
+                document.querySelectorAll('.bg-card').forEach(element => {
+                    element.classList.remove('glass-effect');
+                });
+            }
+        }
+
+        // Close settings modal when clicking outside
+        document.getElementById('settingsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'settingsModal') {
+                closeSettings();
+            }
+        });
+    </script>
+</body>
+
+</html>

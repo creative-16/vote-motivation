@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Virtual Voting Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+        /* Enhanced CSS with Dark Theme */
+        :root {
+            --primary-bg: #0a192f;
+            --secondary-bg: #112240;
+            --card-bg: #1a365d;
+            --accent-primary: #64ffda;
+            --accent-secondary: #6366f1;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #e6f1ff;
+            --text-secondary: #8892b0;
+            --text-muted: #64748b;
+            --border-color: #233554;
+            --glass-bg: rgba(26, 54, 93, 0.8);
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+
+        /* Enhanced Profile Card */
+        .profile-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--secondary-bg));
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(100, 255, 218, 0.2);
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            z-index: 0;
+        }
+
+        .profile-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: 1;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-bg);
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+            position: relative;
+            z-index: 2;
+            background: var(--primary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(100, 255, 218, 0.8);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-status {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-success);
+            border: 2px solid var(--primary-bg);
+            z-index: 3;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .profile-level {
+            background: linear-gradient(135deg, var(--accent-warning), var(--accent-danger));
+            color: var(--primary-bg);
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
+            }
+
+            to {
+                box-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
+            }
+        }
+
+        .profile-stat {
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 12px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .profile-stat:hover::before {
+            left: 100%;
+        }
+
+        .profile-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(100, 255, 218, 0.2);
+            background: rgba(100, 255, 218, 0.2);
+        }
+
+        /* Enhanced Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--primary-bg);
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.3);
+        }
+
+        /* Floating Navigation Button */
+        .fab-nav {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(100, 255, 218, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .fab-nav:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(100, 255, 218, 0.6);
+        }
+
+        .fab-menu {
+            position: fixed;
+            bottom: 5rem;
+            left: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+
+        .fab-menu.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .fab-item {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: scale(0);
+        }
+
+        .fab-menu.active .fab-item {
+            transform: scale(1);
+        }
+
+        .fab-item:hover {
+            background: var(--accent-primary);
+            color: var(--primary-bg);
+            transform: scale(1.1);
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: linear-gradient(135deg, var(--card-bg), var(--secondary-bg));
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-card-header {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            padding: 1rem 1.5rem;
+            position: relative;
+        }
+
+        .content-card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Interactive Elements */
+        .interactive-element {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .interactive-element:hover {
+            transform: scale(1.05);
+        }
+
+        .interactive-element:active {
+            transform: scale(0.95);
+        }
+
+        /* Voting Importance Section */
+        .voting-importance-card {
+            background: rgba(26, 54, 93, 0.5);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .voting-importance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1), rgba(99, 102, 241, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .voting-importance-card:hover::before {
+            opacity: 1;
+        }
+
+        .voting-importance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* System Steps */
+        .system-step {
+            background: rgba(26, 54, 93, 0.5);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .system-step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            width: 20px;
+            height: 2px;
+            background: var(--accent-primary);
+            transform: translateY(-50%);
+        }
+
+        .system-step:last-child::after {
+            display: none;
+        }
+
+        .system-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(26, 54, 93, 0.8);
+        }
+
+        /* Badge Cards */
+        .badge-card {
+            background: rgba(26, 54, 93, 0.5);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .badge-card:hover::before {
+            left: 100%;
+        }
+
+        .badge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Progress Bars */
+        .progress-bar {
+            height: 8px;
+            background: rgba(100, 255, 218, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Emoji Animations */
+        .emoji-bounce {
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .emoji-float {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Timeline Style */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent-primary);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+        }
+
+        .timeline-content {
+            background: rgba(26, 54, 93, 0.5);
+            border-radius: 12px;
+            padding: 1rem;
+            width: 45%;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+        }
+
+        /* Quote Box */
+        .quote-box {
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1), rgba(99, 102, 241, 0.1));
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .quote-box::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: 4rem;
+            color: var(--accent-primary);
+            opacity: 0.3;
+        }
+
+        /* Interactive Quiz Card */
+        .quiz-card {
+            background: rgba(26, 54, 93, 0.5);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1), rgba(99, 102, 241, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .quiz-card:hover::after {
+            opacity: 1;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .system-step::after {
+                display: none;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item::before {
+                left: 20px;
+            }
+
+            .timeline-content {
+                width: calc(100% - 50px);
+                margin-left: 40px !important;
+            }
+        }
+
+        /* Loading Animation */
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(100, 255, 218, 0.3);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="glass fixed top-0 w-full z-50 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="home.html">
+                <div class="flex items-center space-x-2">
+                    <i
+                        class="fas fa-rocket text-accent-primary text-2xl animate__animated animate__pulse animate__infinite"></i>
+                    <span class="text-text-primary font-bold text-xl orbitron">VOTE SPACE</span>
+                </div>
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="vote.html"><button id="voteBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-vote-yea"></i>
+                    </button></a>
+                <a href="profile.html"><button id="profileBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-user"></i>
+                    </button></a>
+                <a href="result.html"><button id="resultsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-chart-pie"></i>
+                    </button></a>
+                <a href="leaderboard.html"><button id="leaderboardBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-trophy"></i>
+                    </button></a>
+                <a href="settings.html"><button id="settingsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-cog"></i>
+                    </button></a>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div class="container mx-auto px-4 pt-24 pb-12">
+        <div class="profile-card p-6 mb-8" data-aos="fade-up" style="margin-top: 20px;">
+            <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+
+                <div class="relative">
+                    <h2 class="text-2xl font-bold text-primary-bg orbitron" style="color: black;">
+                        Welcome, <span>User Name</span>
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Get fullname from sessionStorage
+            const fullname = sessionStorage.getItem('fullname');
+
+            // Find the span element and update it with the fullname
+            const nameElement = document.querySelector('.text-2xl span');
+            if (fullname) {
+                nameElement.textContent = fullname;
+            } else {
+                // Fallback to username if fullname is not available
+                const username = sessionStorage.getItem('username');
+                nameElement.textContent = username || 'Guest';
+            }
+        </script>
+
+        <!-- Chatbot Floating Action Button -->
+        <div class="fab-nav" id="fabNav">
+            <i class="fas fa-comments"></i>
+        </div>
+
+
+
+
+
+        <!-- Interactive Hero Section -->
+        <div class="content-card mb-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="content-card-header">
+                <h2 class="text-2xl font-bold text-primary-bg orbitron" style="color: black;">
+                    <i class="fas fa-flag mr-2"></i>YOUR VOTE, YOUR VOICE
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div data-aos="fade-right">
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">
+                            <span class="text-3xl mr-2 emoji-bounce">🗳️</span>
+                            Why Your Vote Matters
+                        </h3>
+                        <p class="text-text-secondary mb-4">
+                            Every vote is a powerful statement about the kind of world you want to live in. When you
+                            vote, you're not just selecting a candidate - you're shaping policies, influencing
+                            decisions, and participating in the democratic process that affects millions of lives.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-center p-3 bg-card-bg bg-opacity-50 rounded-lg interactive-element">
+                                <span class="text-2xl">🌍</span>
+                                <p class="text-sm text-text-secondary mt-1">Global Impact</p>
+                            </div>
+                            <div class="text-center p-3 bg-card-bg bg-opacity-50 rounded-lg interactive-element">
+                                <span class="text-2xl">🏛️</span>
+                                <p class="text-sm text-text-secondary mt-1">Democracy</p>
+                            </div>
+                            <div class="text-center p-3 bg-card-bg bg-opacity-50 rounded-lg interactive-element">
+                                <span class="text-2xl">✊</span>
+                                <p class="text-sm text-text-secondary mt-1">Power</p>
+                            </div>
+                            <div class="text-center p-3 bg-card-bg bg-opacity-50 rounded-lg interactive-element">
+                                <span class="text-2xl">📢</span>
+                                <p class="text-sm text-text-secondary mt-1">Voice</p>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full" onclick="scrollToSection('voting-importance')">
+                            <i class="fas fa-arrow-down mr-2"></i>Learn More
+                        </button>
+                    </div>
+                    <div data-aos="fade-left">
+                        <img src="./images/1.jpg" alt="Voting Hero" class="rounded-lg interactive-element w-full">
+                        <div class="quote-box mt-4">
+                            <p class="text-text-secondary italic">
+                                "The ballot is stronger than the bullet. The vote is the most powerful nonviolent tool
+                                we have."
+                            </p>
+                            <p class="text-accent-primary text-sm mt-2">- Abraham Lincoln</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Importance Section -->
+        <div id="voting-importance" class="content-card mb-8" data-aos="fade-up" data-aos-delay="200">
+            <div class="content-card-header">
+                <h2 class="text-2xl font-bold text-primary-bg orbitron" style="color: black;">
+                    <i class="fas fa-heart mr-2"></i>THE POWER OF DEMOCRACY
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="timeline mb-6">
+                    <div class="timeline-item" data-aos="fade-up">
+                        <div class="timeline-content">
+                            <h3 class="text-lg font-semibold text-text-primary mb-2">
+                                <span class="text-2xl mr-2 emoji-float">📜</span>
+                                Historical Significance
+                            </h3>
+                            <p class="text-text-secondary text-sm">
+                                Throughout history, voting has been the cornerstone of democratic societies. From
+                                ancient Athens to modern nations, the right to vote has been fought for and cherished by
+                                generations.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="timeline-content">
+                            <h3 class="text-lg font-semibold text-text-primary mb-2">
+                                <span class="text-2xl mr-2 emoji-float">⚖️</span>
+                                Equality & Justice
+                            </h3>
+                            <p class="text-text-secondary text-sm">
+                                Voting ensures that every voice matters, regardless of wealth, status, or background.
+                                It's the great equalizer that gives power to the people.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item" data-aos="fade-up" data-aos-delay="200">
+                        <div class="timeline-content">
+                            <h3 class="text-lg font-semibold text-text-primary mb-2">
+                                <span class="text-2xl mr-2 emoji-float">🌟</span>
+                                Future Impact
+                            </h3>
+                            <p class="text-text-secondary text-sm">
+                                Your vote today shapes tomorrow. Education, healthcare, environment, economy - all are
+                                influenced by the choices we make at the ballot box.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="quiz-card" onclick="startInteractiveQuiz()">
+                        <h4 class="text-text-primary font-semibold mb-2">
+                            <i class="fas fa-question-circle mr-2 text-accent-warning"></i>
+                            Test Your Knowledge
+                        </h4>
+                        <p class="text-text-secondary text-sm">
+                            Take our interactive quiz to learn more about voting history and importance!
+                        </p>
+                    </div>
+                    <div class="quiz-card" onclick="showVotingStats()">
+                        <h4 class="text-text-primary font-semibold mb-2">
+                            <i class="fas fa-chart-bar mr-2 text-accent-primary"></i>
+                            Voting Statistics
+                        </h4>
+                        <p class="text-text-secondary text-sm">
+                            Explore global voting patterns and see how your participation makes a difference!
+                        </p>
+                    </div>
+                    <div class="quiz-card" onclick="shareVotingMessage()">
+                        <h4 class="text-text-primary font-semibold mb-2">
+                            <i class="fas fa-share-alt mr-2 text-accent-secondary"></i>
+                            Spread Awareness
+                        </h4>
+                        <p class="text-text-secondary text-sm">
+                            Share the importance of voting with your friends and family!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How Our System Works Section -->
+        <div class="content-card mb-8" data-aos="fade-up" data-aos-delay="300">
+            <div class="content-card-header">
+                <h2 class="text-2xl font-bold text-primary-bg orbitron" style="color: black;">
+                    <i class="fas fa-cogs mr-2"></i>HOW OUR SYSTEM WORKS
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid md:grid-cols-3 gap-6 mb-6">
+                    <div class="system-step" data-aos="zoom-in" data-aos-delay="400">
+                        <div class="text-center mb-4">
+                            <div
+                                class="w-20 h-20 mx-auto mb-3 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full flex items-center justify-center interactive-element">
+                                <i class="fas fa-tasks text-primary-bg text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-text-primary">Step 1: Learn & Engage</h3>
+                        </div>
+                        <p class="text-text-secondary text-center">
+                            Complete educational tasks, watch videos, and participate in interactive activities about
+                            voting and civic responsibility.
+                        </p>
+                        <div class="mt-3 text-center">
+                            <span
+                                class="bg-accent-success bg-opacity-20 text-accent-success px-3 py-1 rounded-full text-sm">
+                                +5 Coins per task
+                            </span>
+                        </div>
+                    </div>
+                    <div class="system-step" data-aos="zoom-in" data-aos-delay="500">
+                        <div class="text-center mb-4">
+                            <div
+                                class="w-20 h-20 mx-auto mb-3 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full flex items-center justify-center interactive-element">
+                                <i class="fas fa-coins text-primary-bg text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-text-primary">Step 2: Earn Vote Coins</h3>
+                        </div>
+                        <p class="text-text-secondary text-center">
+                            Accumulate Vote Coins through participation. These are your voting currency in our
+                            blockchain-based system.
+                        </p>
+                        <div class="mt-3 text-center">
+                            <span
+                                class="bg-accent-warning bg-opacity-20 text-accent-warning px-3 py-1 rounded-full text-sm">
+                                Blockchain secured
+                            </span>
+                        </div>
+                    </div>
+                    <div class="system-step" data-aos="zoom-in" data-aos-delay="600">
+                        <div class="text-center mb-4">
+                            <div
+                                class="w-20 h-20 mx-auto mb-3 bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full flex items-center justify-center interactive-element">
+                                <i class="fas fa-vote-yea text-primary-bg text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-text-primary">Step 3: Cast Your Vote</h3>
+                        </div>
+                        <p class="text-text-secondary text-center">
+                            Use your Vote Coins to support candidates in fun categories - celebrities, influencers,
+                            movie characters, and more!
+                        </p>
+                        <div class="mt-3 text-center">
+                            <span
+                                class="bg-accent-primary bg-opacity-20 text-accent-primary px-3 py-1 rounded-full text-sm">
+                                1 Coin = 1 Vote
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card-bg bg-opacity-50 rounded-xl p-6" data-aos="fade-up" data-aos-delay="700">
+                    <h3 class="text-lg font-semibold text-text-primary mb-4">
+                        <i class="fas fa-shield-alt mr-2 text-accent-success"></i>Blockchain Technology
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-text-secondary text-sm mb-3">
+                                Our revolutionary blockchain system ensures:
+                            </p>
+                            <ul class="text-text-secondary text-sm space-y-2">
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Complete transparency in voting
+                                </li>
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Immutable vote records</li>
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Protection against fraud</li>
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Decentralized verification</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <img src="./images/2.jpg" alt="Blockchain Voting"
+                                class="rounded-lg interactive-element w-full">
+                            <p class="text-text-secondary text-xs mt-2 text-center">
+                                Each vote is a transaction on our private blockchain
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Categories Section -->
+        <div class="content-card mb-8" data-aos="fade-up" data-aos-delay="400">
+            <div class="content-card-header">
+                <h2 class="text-2xl font-bold text-primary-bg orbitron" style="color: black;">
+                    <i class="fas fa-th-large mr-2"></i>VOTING CATEGORIES
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="voting-importance-card text-center" onclick="showCategoryDetails('celebrities')">
+                        <span class="text-4xl mb-3 block emoji-bounce">🌟</span>
+                        <h3 class="text-text-primary font-semibold">Celebrities</h3>
+                        <p class="text-text-secondary text-sm mt-1">Vote for your favorite stars</p>
+                    </div>
+                    <div class="voting-importance-card text-center" onclick="showCategoryDetails('influencers')">
+                        <span class="text-4xl mb-3 block emoji-bounce">📱</span>
+                        <h3 class="text-text-primary font-semibold">Influencers</h3>
+                        <p class="text-text-secondary text-sm mt-1">Support content creators</p>
+                    </div>
+                    <div class="voting-importance-card text-center" onclick="showCategoryDetails('movies')">
+                        <span class="text-4xl mb-3 block emoji-bounce">🎬</span>
+                        <h3 class="text-text-primary font-semibold">Movie Characters</h3>
+                        <p class="text-text-secondary text-sm mt-1">Choose iconic heroes</p>
+                    </div>
+                    <div class="voting-importance-card text-center" onclick="showCategoryDetails('music')">
+                        <span class="text-4xl mb-3 block emoji-bounce">🎵</span>
+                        <h3 class="text-text-primary font-semibold">Musicians</h3>
+                        <p class="text-text-secondary text-sm mt-1">Vote for artists</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges Section -->
+        <div class="content-card mb-8" data-aos="fade-up" data-aos-delay="500">
+            <div class="content-card-header">
+                <h2 class="text-2xl font-bold text-primary-bg orbitron" style="color: black;">
+                    <i class="fas fa-medal mr-2"></i>ACHIEVEMENT BADGES
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="badge-card text-center" data-aos="flip-left" data-aos-delay="600">
+                        <div
+                            class="bg-accent-warning bg-opacity-20 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3 interactive-element">
+                            <i class="fas fa-medal text-accent-warning text-3xl"></i>
+                        </div>
+                        <h4 class="text-text-primary font-semibold">First Vote</h4>
+                        <p class="text-text-secondary text-xs">Cast your first vote</p>
+                        <div class="mt-2">
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-accent-warning h-2 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card text-center" data-aos="flip-left" data-aos-delay="700">
+                        <div
+                            class="bg-accent-primary bg-opacity-20 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3 interactive-element">
+                            <i class="fas fa-rocket text-accent-primary text-3xl"></i>
+                        </div>
+                        <h4 class="text-text-primary font-semibold">Space Voter</h4>
+                        <p class="text-text-secondary text-xs">Vote in 5 elections</p>
+                        <div class="mt-2">
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-accent-primary h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card text-center" data-aos="flip-left" data-aos-delay="800">
+                        <div
+                            class="bg-accent-secondary bg-opacity-20 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3 interactive-element">
+                            <i class="fas fa-crown text-accent-secondary text-3xl"></i>
+                        </div>
+                        <h4 class="text-text-primary font-semibold">Top 10</h4>
+                        <p class="text-text-secondary text-xs">Reach top 10</p>
+                        <div class="mt-2">
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-accent-secondary h-2 rounded-full" style="width: 30%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card text-center opacity-50" data-aos="flip-left" data-aos-delay="900">
+                        <div
+                            class="bg-text-muted bg-opacity-20 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-lock text-text-muted text-3xl"></i>
+                        </div>
+                        <h4 class="text-text-muted font-semibold">Mystery Badge</h4>
+                        <p class="text-text-muted text-xs">Keep voting to unlock</p>
+                        <div class="mt-2">
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-gray-600 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card-bg bg-opacity-50 rounded-xl p-4" data-aos="fade-up" data-aos-delay="1000">
+                    <h3 class="text-lg font-semibold text-text-primary mb-3">
+                        <i class="fas fa-trophy mr-2 text-accent-warning"></i>How to Earn Badges
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <h4 class="text-text-primary font-semibold mb-2">
+                                <span class="text-2xl mr-2">🏅</span>Common Badges
+                            </h4>
+                            <ul class="text-text-secondary text-sm space-y-1">
+                                <li><i class="fas fa-check-circle text-accent-success mr-2"></i>First Vote - 1 vote</li>
+                                <li><i class="fas fa-check-circle text-accent-success mr-2"></i>Space Voter - 5 votes
+                                </li>
+                                <li><i class="fas fa-check-circle text-accent-success mr-2"></i>Coin Collector - 100
+                                    coins</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-text-primary font-semibold mb-2">
+                                <span class="text-2xl mr-2">⭐</span>Rare Badges
+                            </h4>
+                            <ul class="text-text-secondary text-sm space-y-1">
+                                <li><i class="fas fa-star text-accent-warning mr-2"></i>Voting Master - 20 votes</li>
+                                <li><i class="fas fa-star text-accent-warning mr-2"></i>Influencer - 10 referrals</li>
+                                <li><i class="fas fa-star text-accent-warning mr-2"></i>Perfect Score - All quizzes</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-text-primary font-semibold mb-2">
+                                <span class="text-2xl mr-2">💎</span>Legendary Badges
+                            </h4>
+                            <ul class="text-text-secondary text-sm space-y-1">
+                                <li><i class="fas fa-gem text-purple-400 mr-2"></i>Voting Legend - 100 votes</li>
+                                <li><i class="fas fa-gem text-purple-400 mr-2"></i>Community Leader - 50 referrals</li>
+                                <li><i class="fas fa-gem text-purple-400 mr-2"></i>Early Adopter - First month</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Status Section -->
+        <div class="content-card" data-aos="fade-up" data-aos-delay="600">
+            <div class="content-card-header">
+                <h2 class="text-2xl font-bold text-primary-bg orbitron" style="color: black;">
+                    <i class="fas fa-chart-line mr-2"></i>YOUR CURRENT STATUS
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div data-aos="fade-right" data-aos-delay="700">
+                        <h3 class="text-lg font-semibold text-text-primary mb-3">
+                            <i class="fas fa-chart-bar mr-2 text-accent-primary"></i>Voting Statistics
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Total Votes Cast</span>
+                                    <span class="text-text-primary font-semibold" id="totalVotesStat">0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="totalVotesProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Vote Coins Earned</span>
+                                    <span class="text-text-primary font-semibold" id="coinsEarnedStat">0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="coinsEarnedProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Tasks Completed</span>
+                                    <span class="text-text-primary font-semibold" id="tasksCompletedStat">0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="tasksCompletedProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-text-secondary">Quiz Score Average</span>
+                                    <span class="text-text-primary font-semibold" id="quizScoreStat">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="quizScoreProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-aos="fade-left" data-aos-delay="800">
+                        <h3 class="text-lg font-semibold text-text-primary mb-3">
+                            <i class="fas fa-history mr-2 text-accent-primary"></i>Recent Activity
+                        </h3>
+                        <div class="space-y-2" id="recentActivity">
+                            <div class="flex items-center space-x-3 p-2 bg-card-bg bg-opacity-50 rounded-lg">
+                                <div class="bg-accent-success bg-opacity-20 rounded-full p-2">
+                                    <i class="fas fa-check text-accent-success text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-text-primary text-sm">Welcome to Vote Space!</p>
+                                    <p class="text-text-secondary text-xs">Just now</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full mt-4" onclick="viewAllActivity()">
+                            <i class="fas fa-eye mr-2"></i>View All Activity
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earn Coins Modal -->
+    <div id="earnCoinsModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
+        <div class="glass rounded-2xl p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold text-text-primary mb-4 orbitron">EARN VOTE COINS</h2>
+            <div class="space-y-4 mb-6">
+                <div class="bg-card-bg bg-opacity-50 rounded-xl p-4">
+                    <h3 class="text-text-primary font-semibold mb-2">
+                        <i class="fas fa-book mr-2 text-accent-primary"></i>Complete Educational Tasks
+                    </h3>
+                    <p class="text-text-secondary text-sm mb-3">Learn about voting and civic engagement to earn coins.
+                    </p>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-accent-primary">+5 Coins</span>
+                        <span class="text-text-secondary text-xs">~5 minutes</span>
+                    </div>
+                    <button class="btn-primary w-full" id="startTaskBtn">
+                        <i class="fas fa-play mr-2"></i>Start Task
+                    </button>
+                </div>
+                <div class="bg-card-bg bg-opacity-50 rounded-xl p-4">
+                    <h3 class="text-text-primary font-semibold mb-2">
+                        <i class="fas fa-question-circle mr-2 text-accent-warning"></i>Daily Quiz
+                    </h3>
+                    <p class="text-text-secondary text-sm mb-3">Test your knowledge and earn up to 10 coins.</p>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-accent-warning">+10 Coins</span>
+                        <span class="text-text-secondary text-xs">~3 minutes</span>
+                    </div>
+                    <button class="btn-primary w-full" id="startQuizBtn">
+                        <i class="fas fa-brain mr-2"></i>Start Quiz
+                    </button>
+                </div>
+                <div class="bg-card-bg bg-opacity-50 rounded-xl p-4">
+                    <h3 class="text-text-primary font-semibold mb-2">
+                        <i class="fas fa-share-alt mr-2 text-accent-secondary"></i>Refer Friends
+                    </h3>
+                    <p class="text-text-secondary text-sm mb-3">Invite friends and earn 5 coins for each successful
+                        referral.</p>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-accent-secondary">+5 Coins</span>
+                        <span class="text-text-secondary text-xs">Per referral</span>
+                    </div>
+                    <button class="btn-primary w-full" id="referBtn">
+                        <i class="fas fa-user-plus mr-2"></i>Share Link
+                    </button>
+                </div>
+            </div>
+            <button id="closeEarnCoinsModal"
+                class="w-full bg-card-bg hover:bg-card-bg hover:bg-opacity-70 text-text-primary font-bold py-3 px-6 rounded-lg transition">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
+        <div class="glass rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold text-text-primary mb-4 orbitron">EDUCATIONAL TASK</h2>
+            <div id="taskContent" class="mb-6">
+                <!-- Task content will be dynamically loaded here -->
+            </div>
+            <div class="flex space-x-4">
+                <button id="completeTaskBtn" class="btn-primary flex-1">
+                    <i class="fas fa-check mr-2"></i>Complete Task
+                </button>
+                <button id="closeTaskModal"
+                    class="flex-1 bg-card-bg hover:bg-card-bg hover:bg-opacity-70 text-text-primary font-bold py-3 px-6 rounded-lg transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quizModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
+        <div class="glass rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold text-text-primary mb-4 orbitron">INTERACTIVE QUIZ</h2>
+            <div id="quizContent" class="mb-6">
+                <!-- Quiz content will be dynamically loaded here -->
+            </div>
+            <div class="flex space-x-4">
+                <button id="submitQuizBtn" class="btn-primary flex-1">
+                    <i class="fas fa-paper-plane mr-2"></i>Submit Answer
+                </button>
+                <button id="closeQuizModal"
+                    class="flex-1 bg-card-bg hover:bg-card-bg hover:bg-opacity-70 text-text-primary font-bold py-3 px-6 rounded-lg transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Details Modal -->
+    <div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50">
+        <div class="glass rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold text-text-primary mb-4 orbitron" id="categoryTitle">CATEGORY DETAILS</h2>
+            <div id="categoryContent" class="mb-6">
+                <!-- Category content will be dynamically loaded here -->
+            </div>
+            <button id="closeCategoryModal" class="btn-primary w-full">
+                <i class="fas fa-times mr-2"></i>Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="flex items-center">
+            <i id="toastIcon" class="fas fa-info-circle text-accent-primary text-xl mr-3"></i>
+            <div>
+                <p id="toastTitle" class="text-text-primary font-semibold">Notification</p>
+                <p id="toastMessage" class="text-text-secondary text-sm">Message here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+
+        // Initialize AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Firebase Configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBsqxp46x8mwXRpThRdpxsskRM1ie4PNCg",
+            authDomain: "vote-edb06.firebaseapp.com",
+            projectId: "vote-edb06",
+            storageBucket: "vote-edb06.appspot.com",
+            messagingSenderId: "916721565065",
+            appId: "1:916721565065:web:2a451c1b45173d8b127558"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+
+
+        // Load user data
+        function loadUserData() {
+            const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+            const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+
+            if (username && userId) {
+                document.getElementById('profileUsername').textContent = username;
+
+                // Load user data from Firestore
+                db.collection('voters').doc(userId).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            document.getElementById('totalVotes').textContent = userData.totalVotes || 0;
+                            document.getElementById('totalPoints').textContent = userData.points || 0;
+                            document.getElementById('voteCoins').textContent = userData.voteCoins || 0;
+                            document.getElementById('userRank').textContent = '#' + (userData.rank || '-');
+                            document.getElementById('joinDate').textContent = userData.joinDate || '2023';
+
+                            // Update statistics
+                            updateStatistics(userData);
+
+                            // Load recent activity
+                            loadRecentActivity(userId);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error loading user data:", error);
+                    });
+            }
+        }
+
+        // Update statistics
+        function updateStatistics(userData) {
+            const totalVotes = userData.totalVotes || 0;
+            const voteCoins = userData.voteCoins || 0;
+            const tasksCompleted = userData.tasksCompleted || 0;
+            const quizScore = userData.quizScore || 0;
+
+            // Update vote statistics
+            document.getElementById('totalVotesStat').textContent = totalVotes;
+            document.getElementById('totalVotesProgress').style.width = Math.min(totalVotes * 5, 100) + '%';
+
+            // Update coin statistics
+            document.getElementById('coinsEarnedStat').textContent = voteCoins;
+            document.getElementById('coinsEarnedProgress').style.width = Math.min(voteCoins, 100) + '%';
+
+            // Update task statistics
+            document.getElementById('tasksCompletedStat').textContent = tasksCompleted;
+            document.getElementById('tasksCompletedProgress').style.width = Math.min(tasksCompleted * 10, 100) + '%';
+
+            // Update quiz score
+            document.getElementById('quizScoreStat').textContent = quizScore + '%';
+            document.getElementById('quizScoreProgress').style.width = quizScore + '%';
+        }
+
+        // Load recent activity
+        function loadRecentActivity(userId) {
+            db.collection('voters').doc(userId).collection('activity')
+                .orderBy('timestamp', 'desc')
+                .limit(5)
+                .get()
+                .then((querySnapshot) => {
+                    const activityContainer = document.getElementById('recentActivity');
+                    activityContainer.innerHTML = '';
+
+                    if (querySnapshot.empty) {
+                        activityContainer.innerHTML = `
+                            <div class="flex items-center space-x-3 p-2 bg-card-bg bg-opacity-50 rounded-lg">
+                                <div class="bg-accent-success bg-opacity-20 rounded-full p-2">
+                                    <i class="fas fa-check text-accent-success text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-text-primary text-sm">Welcome to Vote Space!</p>
+                                    <p class="text-text-secondary text-xs">Just now</p>
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    querySnapshot.forEach((doc) => {
+                        const activity = doc.data();
+                        const activityElement = document.createElement('div');
+                        activityElement.className = 'flex items-center space-x-3 p-2 bg-card-bg bg-opacity-50 rounded-lg';
+
+                        let icon, iconColor;
+                        switch (activity.type) {
+                            case 'vote':
+                                icon = 'fa-vote-yea';
+                                iconColor = 'accent-primary';
+                                break;
+                            case 'task':
+                                icon = 'fa-tasks';
+                                iconColor = 'accent-secondary';
+                                break;
+                            case 'quiz':
+                                icon = 'fa-question-circle';
+                                iconColor = 'accent-warning';
+                                break;
+                            case 'badge':
+                                icon = 'fa-medal';
+                                iconColor = 'accent-success';
+                                break;
+                            default:
+                                icon = 'fa-info-circle';
+                                iconColor = 'text-muted';
+                        }
+
+                        activityElement.innerHTML = `
+                            <div class="bg-${iconColor} bg-opacity-20 rounded-full p-2">
+                                <i class="fas ${icon} text-${iconColor} text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-text-primary text-sm">${activity.description}</p>
+                                <p class="text-text-secondary text-xs">${formatTimestamp(activity.timestamp)}</p>
+                            </div>
+                        `;
+
+                        activityContainer.appendChild(activityElement);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error loading recent activity:", error);
+                });
+        }
+
+        // Format timestamp
+        function formatTimestamp(timestamp) {
+            const date = timestamp.toDate();
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000); // Difference in seconds
+
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return Math.floor(diff / 60) + ' minutes ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + ' hours ago';
+            if (diff < 604800) return Math.floor(diff / 86400) + ' days ago';
+
+            return date.toLocaleDateString();
+        }
+
+        // Show toast notification
+        function showToast(title, message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            // Set icon based on type
+            if (type === 'success') {
+                toastIcon.className = 'fas fa-check-circle text-accent-success text-xl mr-3';
+            } else if (type === 'warning') {
+                toastIcon.className = 'fas fa-exclamation-triangle text-accent-warning text-xl mr-3';
+            } else if (type === 'error') {
+                toastIcon.className = 'fas fa-times-circle text-accent-danger text-xl mr-3';
+            } else {
+                toastIcon.className = 'fas fa-info-circle text-accent-primary text-xl mr-3';
+            }
+
+            // Show toast
+            toast.classList.add('show');
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add activity to user log
+        function addActivity(userId, type, description) {
+            db.collection('voters').doc(userId).collection('activity').add({
+                type: type,
+                description: description,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+                .then(() => {
+                    console.log("Activity added successfully");
+                })
+                .catch((error) => {
+                    console.error("Error adding activity:", error);
+                });
+        }
+
+        // Scroll to section
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Start interactive quiz
+        function startInteractiveQuiz() {
+            document.getElementById('earnCoinsModal').classList.add('hidden');
+            loadQuiz();
+            document.getElementById('quizModal').classList.remove('hidden');
+        }
+
+        // Show voting stats
+        function showVotingStats() {
+            showToast('Voting Statistics', 'Global voting statistics coming soon!', 'info');
+        }
+
+        // Share voting message
+        function shareVotingMessage() {
+            const text = "I'm learning about the importance of voting through Vote Space! Join me in making democracy stronger. 🗳️";
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Vote Space - Learn About Voting',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text + ' ' + window.location.href)
+                    .then(() => {
+                        showToast('Success!', 'Message copied to clipboard!', 'success');
+                    });
+            }
+        }
+
+        // Show category details
+        function showCategoryDetails(category) {
+            const categories = {
+                celebrities: {
+                    title: 'CELEBRITY VOTING',
+                    content: `
+                        <div class="text-center mb-4">
+                            <span class="text-6xl">🌟</span>
+                        </div>
+                        <p class="text-text-secondary mb-4">
+                            Vote for your favorite celebrities from around the world! From movie stars to musicians, 
+                            athletes to influencers - make your voice heard in the ultimate celebrity showdown!
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Current Leaders</p>
+                                <p class="text-text-secondary text-sm">Check the leaderboard</p>
+                            </div>
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Vote Cost</p>
+                                <p class="text-text-secondary text-sm">1 Vote Coin per vote</p>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full" onclick="goToVoting()">
+                            <i class="fas fa-vote-yea mr-2"></i>Vote Now
+                        </button>
+                    `
+                },
+                influencers: {
+                    title: 'INFLUENCER VOTING',
+                    content: `
+                        <div class="text-center mb-4">
+                            <span class="text-6xl">📱</span>
+                        </div>
+                        <p class="text-text-secondary mb-4">
+                            Support your favorite content creators! From YouTubers to TikTok stars, 
+                            podcast hosts to bloggers - vote for the influencers who inspire you daily!
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Categories</p>
+                                <p class="text-text-secondary text-sm">Tech, Beauty, Gaming, more</p>
+                            </div>
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Special Rewards</p>
+                                <p class="text-text-secondary text-sm">Earn bonus coins</p>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full" onclick="goToVoting()">
+                            <i class="fas fa-vote-yea mr-2"></i>Vote Now
+                        </button>
+                    `
+                },
+                movies: {
+                    title: 'MOVIE CHARACTER VOTING',
+                    content: `
+                        <div class="text-center mb-4">
+                            <span class="text-6xl">🎬</span>
+                        </div>
+                        <p class="text-text-secondary mb-4">
+                            Choose your favorite movie characters! From superheroes to villains, 
+                            animated characters to action heroes - vote for the most iconic characters in cinema history!
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Genres</p>
+                                <p class="text-text-secondary text-sm">Action, Comedy, Drama, more</p>
+                            </div>
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Eras</p>
+                                <p class="text-text-secondary text-sm">Classic to Modern</p>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full" onclick="goToVoting()">
+                            <i class="fas fa-vote-yea mr-2"></i>Vote Now
+                        </button>
+                    `
+                },
+                music: {
+                    title: 'MUSICIAN VOTING',
+                    content: `
+                        <div class="text-center mb-4">
+                            <span class="text-6xl">🎵</span>
+                        </div>
+                        <p class="text-text-secondary mb-4">
+                            Vote for your favorite musicians! From rock legends to pop stars, 
+                            classical composers to indie artists - celebrate the power of music through voting!
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Genres</p>
+                                <p class="text-text-secondary text-sm">Rock, Pop, Jazz, Classical, more</p>
+                            </div>
+                            <div class="bg-card-bg bg-opacity-50 rounded-lg p-3">
+                                <p class="text-text-primary font-semibold">Time Periods</p>
+                                <p class="text-text-secondary text-sm">1950s to Present</p>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full" onclick="goToVoting()">
+                            <i class="fas fa-vote-yea mr-2"></i>Vote Now
+                        </button>
+                    `
+                }
+            };
+
+            const categoryData = categories[category];
+            document.getElementById('categoryTitle').textContent = categoryData.title;
+            document.getElementById('categoryContent').innerHTML = categoryData.content;
+            document.getElementById('categoryModal').classList.remove('hidden');
+        }
+
+        // Go to voting page
+        function goToVoting() {
+            document.getElementById('categoryModal').classList.add('hidden');
+            window.location.href = 'vote.html';
+        }
+
+        // View all activity
+        function viewAllActivity() {
+            window.location.href = 'profile.html#activity';
+        }
+
+        // Navigation
+        document.getElementById('homeBtn').addEventListener('click', function () {
+            window.location.href = 'home.html';
+        });
+
+        document.getElementById('profileBtn').addEventListener('click', function () {
+            window.location.href = 'profile.html';
+        });
+
+        document.getElementById('voteBtn').addEventListener('click', function () {
+            window.location.href = 'vote.html';
+        });
+
+        document.getElementById('resultsBtn').addEventListener('click', function () {
+            window.location.href = 'result.html';
+        });
+
+        document.getElementById('leaderboardBtn').addEventListener('click', function () {
+            window.location.href = 'leaderboard.html';
+        });
+
+        document.getElementById('settingsBtn').addEventListener('click', function () {
+            window.location.href = 'settings.html';
+        });
+
+        // Quick Vote Button
+        document.getElementById('quickVoteBtn').addEventListener('click', function () {
+            window.location.href = 'vote.html';
+        });
+
+        // FAB Navigation
+        document.getElementById('fabNav').addEventListener('click', function () {
+            document.getElementById('fabMenu').classList.toggle('active');
+            this.querySelector('i').classList.toggle('fa-compass');
+            this.querySelector('i').classList.toggle('fa-times');
+        });
+
+        document.querySelectorAll('.fab-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const page = this.getAttribute('data-page');
+                window.location.href = `${page}.html`;
+            });
+        });
+
+        // Earn Coins Modal
+        document.getElementById('earnCoinsBtn').addEventListener('click', function () {
+            document.getElementById('earnCoinsModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeEarnCoinsModal').addEventListener('click', function () {
+            document.getElementById('earnCoinsModal').classList.add('hidden');
+        });
+
+        // Task Modal
+        document.getElementById('startTaskBtn').addEventListener('click', function () {
+            document.getElementById('earnCoinsModal').classList.add('hidden');
+            loadTask();
+            document.getElementById('taskModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeTaskModal').addEventListener('click', function () {
+            document.getElementById('taskModal').classList.add('hidden');
+        });
+
+        document.getElementById('completeTaskBtn').addEventListener('click', function () {
+            completeTask();
+        });
+
+        // Quiz Modal
+        document.getElementById('startQuizBtn').addEventListener('click', function () {
+            document.getElementById('earnCoinsModal').classList.add('hidden');
+            loadQuiz();
+            document.getElementById('quizModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeQuizModal').addEventListener('click', function () {
+            document.getElementById('quizModal').classList.add('hidden');
+        });
+
+        document.getElementById('submitQuizBtn').addEventListener('click', function () {
+            submitQuiz();
+        });
+
+        // Category Modal
+        document.getElementById('closeCategoryModal').addEventListener('click', function () {
+            document.getElementById('categoryModal').classList.add('hidden');
+        });
+
+        // Refer Friends
+        document.getElementById('referBtn').addEventListener('click', function () {
+            const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+            const referLink = `${window.location.origin}/register.html?ref=${userId}`;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(referLink)
+                .then(() => {
+                    showToast('Success!', 'Referral link copied to clipboard!', 'success');
+                })
+                .catch(() => {
+                    showToast('Error', 'Failed to copy referral link', 'error');
+                });
+        });
+
+        // Load Task
+        function loadTask() {
+            const tasks = [
+                {
+                    title: "The History of Voting Rights",
+                    content: `
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">The History of Voting Rights 📜</h3>
+                        <div class="bg-card-bg bg-opacity-50 rounded-lg p-4 mb-4">
+                            <p class="text-text-secondary mb-3">
+                                Voting rights have evolved significantly throughout history. In many democracies, the right to vote was initially limited to property-owning men. Over time, these restrictions were gradually removed, expanding suffrage to all adult citizens regardless of gender, race, or economic status.
+                            </p>
+                            <p class="text-text-secondary mb-3">
+                                The women's suffrage movement, which spanned from the late 19th century to the early 20th century, was instrumental in securing voting rights for women. Similarly, the civil rights movement in the United States fought against discriminatory practices that prevented racial minorities from exercising their right to vote.
+                            </p>
+                            <p class="text-text-secondary">
+                                Today, most democracies recognize universal adult suffrage as a fundamental principle. However, challenges remain, including voter suppression, gerrymandering, and low voter turnout in some regions.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-center">
+                                <img src="https://picsum.photos/seed/womens-suffrage/300/200.jpg" alt="Women's Suffrage" class="rounded-lg w-full">
+                                <p class="text-text-secondary text-xs mt-2">Women's Suffrage Movement</p>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://picsum.photos/seed/civil-rights/300/200.jpg" alt="Civil Rights" class="rounded-lg w-full">
+                                <p class="text-text-secondary text-xs mt-2">Civil Rights Movement</p>
+                            </div>
+                        </div>
+                        <div class="bg-accent-primary bg-opacity-10 rounded-lg p-3">
+                            <p class="text-text-primary text-sm">
+                                <i class="fas fa-lightbulb mr-2 text-accent-primary"></i>
+                                <strong>Did you know?</strong> New Zealand was the first self-governing country to give all women the right to vote in 1893.
+                            </p>
+                        </div>
+                    `
+                },
+                {
+                    title: "The Importance of Informed Voting",
+                    content: `
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">The Importance of Informed Voting 🧠</h3>
+                        <div class="bg-card-bg bg-opacity-50 rounded-lg p-4 mb-4">
+                            <p class="text-text-secondary mb-3">
+                                Informed voting is crucial for a healthy democracy. When voters educate themselves about candidates, issues, and policies, they make better decisions that reflect their values and interests. This leads to more effective governance and better outcomes for society as a whole.
+                            </p>
+                            <p class="text-text-secondary mb-3">
+                                To become an informed voter, consider researching candidates' backgrounds, policy positions, and voting records. Look beyond campaign slogans and soundbites to understand the substance of their platforms. Pay attention to local elections as well, as these often have a more direct impact on daily life.
+                            </p>
+                            <p class="text-text-secondary">
+                                Remember that voting is not just a right but a responsibility. By taking the time to educate yourself before casting your ballot, you honor the democratic process and contribute to a more informed citizenry.
+                            </p>
+                        </div>
+                        <div class="bg-accent-secondary bg-opacity-10 rounded-lg p-4 mb-4">
+                            <h4 class="text-text-primary font-semibold mb-2">Tips for Informed Voting:</h4>
+                            <ul class="text-text-secondary text-sm space-y-1">
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Research multiple sources</li>
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Fact-check claims</li>
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Understand key issues</li>
+                                <li><i class="fas fa-check text-accent-success mr-2"></i>Consider long-term impacts</li>
+                            </ul>
+                        </div>
+                        <img src="https://picsum.photos/seed/informed-voter/600/300.jpg" alt="Informed Voter" class="rounded-lg w-full">
+                    `
+                },
+                {
+                    title: "Voting Systems Around the World",
+                    content: `
+                        <h3 class="text-xl font-semibold text-text-primary mb-4">Voting Systems Around the World 🌍</h3>
+                        <div class="bg-card-bg bg-opacity-50 rounded-lg p-4 mb-4">
+                            <p class="text-text-secondary mb-3">
+                                Different countries use various voting systems to translate citizen preferences into election outcomes. These systems can be broadly categorized into majoritarian, proportional, and mixed systems.
+                            </p>
+                            <p class="text-text-secondary mb-3">
+                                Majoritarian systems, such as first-past-the-post, award victory to the candidate with the most votes in a given district. Proportional representation systems allocate seats based on the percentage of votes received by each party. Mixed systems combine elements of both approaches.
+                            </p>
+                            <p class="text-text-secondary">
+                                Each system has its advantages and disadvantages. Majoritarian systems tend to produce stable governments but may not accurately reflect voter preferences. Proportional systems ensure fairer representation but can lead to fragmented legislatures and coalition governments.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 mb-4">
+                            <div class="bg-accent-primary bg-opacity-10 rounded-lg p-3 text-center">
+                                <i class="fas fa-chart-pie text-2xl text-accent-primary mb-2"></i>
+                                <p class="text-text-primary text-sm font-semibold">Proportional</p>
+                                <p class="text-text-secondary text-xs">Fair representation</p>
+                            </div>
+                            <div class="bg-accent-secondary bg-opacity-10 rounded-lg p-3 text-center">
+                                <i class="fas fa-trophy text-2xl text-accent-secondary mb-2"></i>
+                                <p class="text-text-primary text-sm font-semibold">Majoritarian</p>
+                                <p class="text-text-secondary text-xs">Stable government</p>
+                            </div>
+                            <div class="bg-accent-warning bg-opacity-10 rounded-lg p-3 text-center">
+                                <i class="fas fa-balance-scale text-2xl text-accent-warning mb-2"></i>
+                                <p class="text-text-primary text-sm font-semibold">Mixed</p>
+                                <p class="text-text-secondary text-xs">Balance approach</p>
+                            </div>
+                        </div>
+                        <img src="https://picsum.photos/seed/voting-systems/600/300.jpg" alt="Voting Systems" class="rounded-lg w-full">
+                    `
+                }
+            ];
+
+            const randomTask = tasks[Math.floor(Math.random() * tasks.length)];
+            document.getElementById('taskContent').innerHTML = randomTask.content;
+        }
+
+        // Complete Task
+        function completeTask() {
+            const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+
+            // Show loading
+            document.getElementById('completeTaskBtn').innerHTML = '<div class="loader mx-auto"></div>';
+            document.getElementById('completeTaskBtn').disabled = true;
+
+            // Update user data
+            db.collection('voters').doc(userId).update({
+                voteCoins: firebase.firestore.FieldValue.increment(5),
+                points: firebase.firestore.FieldValue.increment(5),
+                tasksCompleted: firebase.firestore.FieldValue.increment(1)
+            })
+                .then(() => {
+                    // Add activity
+                    addActivity(userId, 'task', 'Completed an educational task and earned 5 Vote Coins');
+
+                    // Update UI
+                    loadUserData();
+
+                    // Close modal
+                    document.getElementById('taskModal').classList.add('hidden');
+
+                    // Reset button
+                    document.getElementById('completeTaskBtn').innerHTML = '<i class="fas fa-check mr-2"></i>Complete Task';
+                    document.getElementById('completeTaskBtn').disabled = false;
+
+                    // Show notification
+                    showToast('Task Completed!', 'You earned 5 Vote Coins!', 'success');
+                })
+                .catch((error) => {
+                    console.error("Error completing task:", error);
+                    showToast('Error', 'Failed to complete task. Please try again.', 'error');
+
+                    // Reset button
+                    document.getElementById('completeTaskBtn').innerHTML = '<i class="fas fa-check mr-2"></i>Complete Task';
+                    document.getElementById('completeTaskBtn').disabled = false;
+                });
+        }
+
+        // Load Quiz
+        function loadQuiz() {
+            const quizzes = [
+                {
+                    question: "When did women get the right to vote in the United States?",
+                    options: ["1776", "1865", "1920", "1945"],
+                    correct: 2,
+                    explanation: "The 19th Amendment was ratified in 1920, granting women the right to vote in the United States."
+                },
+                {
+                    question: "What is gerrymandering?",
+                    options: [
+                        "A type of voting machine",
+                        "Manipulating electoral boundaries for political advantage",
+                        "A form of protest voting",
+                        "A method of counting votes"
+                    ],
+                    correct: 1,
+                    explanation: "Gerrymandering is the practice of drawing electoral district boundaries to favor one political party or group."
+                },
+                {
+                    question: "Which country was the first to grant women the right to vote?",
+                    options: ["United States", "United Kingdom", "New Zealand", "France"],
+                    correct: 2,
+                    explanation: "New Zealand granted women the right to vote in 1893, becoming the first self-governing country to do so."
+                },
+                {
+                    question: "What is voter turnout?",
+                    options: [
+                        "The percentage of eligible voters who cast a ballot",
+                        "The number of candidates in an election",
+                        "The time it takes to count votes",
+                        "The process of registering to vote"
+                    ],
+                    correct: 0,
+                    explanation: "Voter turnout is the percentage of eligible voters who actually participate in an election by casting their ballot."
+                },
+                {
+                    question: "What is the purpose of a secret ballot?",
+                    options: [
+                        "To make voting faster",
+                        "To prevent voter intimidation and coercion",
+                        "To reduce election costs",
+                        "To allow for electronic voting"
+                    ],
+                    correct: 1,
+                    explanation: "The secret ballot protects voters from intimidation and coercion, allowing them to vote freely without fear of repercussions."
+                }
+            ];
+
+            const randomQuiz = quizzes[Math.floor(Math.random() * quizzes.length)];
+
+            let optionsHTML = '';
+            randomQuiz.options.forEach((option, index) => {
+                optionsHTML += `
+                    <label class="flex items-center p-3 bg-card-bg bg-opacity-50 rounded-lg cursor-pointer hover:bg-opacity-70 transition">
+                        <input type="radio" name="quizAnswer" value="${index}" class="mr-3">
+                        <span class="text-text-secondary">${option}</span>
+                    </label>
+                `;
+            });
+
+            document.getElementById('quizContent').innerHTML = `
+                <div class="bg-card-bg bg-opacity-50 rounded-lg p-4 mb-4">
+                    <h3 class="text-lg font-semibold text-text-primary mb-3">${randomQuiz.question}</h3>
+                    <div class="space-y-2">
+                        ${optionsHTML}
+                    </div>
+                </div>
+                <div id="quizResult" class="hidden">
+                    <div class="bg-card-bg bg-opacity-50 rounded-lg p-4">
+                        <p id="resultMessage" class="text-text-primary mb-2"></p>
+                        <p id="resultExplanation" class="text-text-secondary text-sm"></p>
+                    </div>
+                </div>
+            `;
+
+            // Store correct answer for validation
+            document.getElementById('quizContent').setAttribute('data-correct', randomQuiz.correct);
+            document.getElementById('quizContent').setAttribute('data-explanation', randomQuiz.explanation);
+        }
+
+        // Submit Quiz
+        function submitQuiz() {
+            const selectedOption = document.querySelector('input[name="quizAnswer"]:checked');
+            const correctAnswer = parseInt(document.getElementById('quizContent').getAttribute('data-correct'));
+            const explanation = document.getElementById('quizContent').getAttribute('data-explanation');
+
+            if (!selectedOption) {
+                showToast('Warning', 'Please select an answer', 'warning');
+                return;
+            }
+
+            const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+            const isCorrect = parseInt(selectedOption.value) === correctAnswer;
+            const coinsEarned = isCorrect ? 10 : 2; // 10 coins for correct, 2 for participation
+
+            // Show result
+            const resultDiv = document.getElementById('quizResult');
+            const resultMessage = document.getElementById('resultMessage');
+            const resultExplanation = document.getElementById('resultExplanation');
+
+            resultDiv.classList.remove('hidden');
+
+            if (isCorrect) {
+                resultMessage.innerHTML = '<i class="fas fa-check-circle text-accent-success mr-2"></i><span class="text-accent-success">Correct!</span>';
+                resultMessage.className = 'text-accent-success font-semibold mb-2';
+            } else {
+                resultMessage.innerHTML = '<i class="fas fa-times-circle text-accent-danger mr-2"></i><span class="text-accent-danger">Incorrect</span>';
+                resultMessage.className = 'text-accent-danger font-semibold mb-2';
+            }
+
+            resultExplanation.textContent = explanation;
+
+            // Disable submit button
+            document.getElementById('submitQuizBtn').disabled = true;
+            document.getElementById('submitQuizBtn').innerHTML = 'Answer Submitted';
+
+            // Update user data
+            db.collection('voters').doc(userId).update({
+                voteCoins: firebase.firestore.FieldValue.increment(coinsEarned),
+                points: firebase.firestore.FieldValue.increment(coinsEarned),
+                totalQuizzes: firebase.firestore.FieldValue.increment(1),
+                correctAnswers: firebase.firestore.FieldValue.increment(isCorrect ? 1 : 0)
+            })
+                .then(() => {
+                    // Calculate quiz score
+                    db.collection('voters').doc(userId).get()
+                        .then((doc) => {
+                            const userData = doc.data();
+                            const score = Math.round((userData.correctAnswers / userData.totalQuizzes) * 100);
+
+                            return db.collection('voters').doc(userId).update({
+                                quizScore: score
+                            });
+                        })
+                        .then(() => {
+                            // Add activity
+                            addActivity(userId, 'quiz', `Completed a quiz and earned ${coinsEarned} Vote Coins`);
+
+                            // Update UI
+                            loadUserData();
+
+                            // Show notification
+                            if (isCorrect) {
+                                showToast('Correct!', 'You earned 10 Vote Coins!', 'success');
+                            } else {
+                                showToast('Good Try!', 'You earned 2 Vote Coins for participating', 'info');
+                            }
+                        });
+                })
+                .catch((error) => {
+                    console.error("Error submitting quiz:", error);
+                    showToast('Error', 'Failed to submit quiz. Please try again.', 'error');
+                });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            if (checkLoginStatus()) {
+                loadUserData();
+            }
+        });
+    </script>
+</body>
+
+</html>

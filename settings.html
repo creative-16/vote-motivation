@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Virtual Voting Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #c471f5 75%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #8b5cf6;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(30px);
+        }
+
+        .setting-card {
+            transition: all 0.3s ease;
+        }
+
+        .setting-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="glass fixed top-0 w-full z-50 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="home.html">
+                <div class="flex items-center space-x-2">
+                    <i
+                        class="fas fa-rocket text-accent-primary text-2xl animate__animated animate__pulse animate__infinite"></i>
+                    <span class="text-text-primary font-bold text-xl orbitron">VOTE SPACE</span>
+                </div>
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="vote.html"><button id="voteBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-vote-yea"></i>
+                    </button></a>
+                <a href="profile.html"><button id="profileBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-user"></i>
+                    </button></a>
+                <a href="result.html"><button id="resultsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-chart-pie"></i>
+                    </button></a>
+                <a href="leaderboard.html"><button id="leaderboardBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-trophy"></i>
+                    </button></a>
+                <a href="settings.html"><button id="settingsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-cog"></i>
+                    </button></a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 pt-24 pb-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 orbitron">
+                <i class="fas fa-cog mr-3"></i>SETTINGS
+            </h1>
+            <p class="text-purple-200">Customize your voting experience</p>
+        </header>
+
+        <main class="max-w-4xl mx-auto">
+            <!-- Account Settings -->
+            <div class="glass rounded-2xl p-6 mb-6">
+                <h2 class="text-2xl font-bold text-white mb-6 orbitron">ACCOUNT SETTINGS</h2>
+
+                <div class="space-y-4">
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Username</h3>
+                            <p class="text-purple-200 text-sm">Change your cosmic identifier</p>
+                        </div>
+                        <button class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition">
+                            Edit
+                        </button>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Email</h3>
+                            <p class="text-purple-200 text-sm">user@example.com</p>
+                        </div>
+                        <button class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition">
+                            Update
+                        </button>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Password</h3>
+                            <p class="text-purple-200 text-sm">Last changed 30 days ago</p>
+                        </div>
+                        <button class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition">
+                            Change
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="glass rounded-2xl p-6 mb-6">
+                <h2 class="text-2xl font-bold text-white mb-6 orbitron">PREFERENCES</h2>
+
+                <div class="space-y-4">
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Dark Mode</h3>
+                            <p class="text-purple-200 text-sm">Toggle dark theme</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Notifications</h3>
+                            <p class="text-purple-200 text-sm">Receive voting reminders</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notificationToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Sound Effects</h3>
+                            <p class="text-purple-200 text-sm">Play sounds during voting</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="soundToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Animations</h3>
+                            <p class="text-purple-200 text-sm">Enable UI animations</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="animationToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy -->
+            <div class="glass rounded-2xl p-6 mb-6">
+                <h2 class="text-2xl font-bold text-white mb-6 orbitron">PRIVACY</h2>
+
+                <div class="space-y-4">
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Profile Visibility</h3>
+                            <p class="text-purple-200 text-sm">Show profile on leaderboard</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="profileVisibilityToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Anonymous Voting</h3>
+                            <p class="text-purple-200 text-sm">Hide your voting choices</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="anonymousToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-white font-semibold">Data Collection</h3>
+                            <p class="text-purple-200 text-sm">Help improve the system</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="dataCollectionToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced -->
+            <div class="glass rounded-2xl p-6 mb-6">
+                <h2 class="text-2xl font-bold text-white mb-6 orbitron">ADVANCED</h2>
+
+                <div class="space-y-4">
+                    <div class="setting-card glass rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="text-white font-semibold">Reset Votes</h3>
+                                <p class="text-purple-200 text-sm">Clear all your voting data</p>
+                            </div>
+                            <button id="resetVotesBtn"
+                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="text-white font-semibold">Export Data</h3>
+                                <p class="text-purple-200 text-sm">Download your voting history</p>
+                            </div>
+                            <button id="exportDataBtn"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
+                                Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-card glass rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="text-white font-semibold">Delete Account</h3>
+                                <p class="text-purple-200 text-sm">Permanently remove your account</p>
+                            </div>
+                            <button id="deleteAccountBtn"
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="text-center">
+                <button id="saveSettingsBtn"
+                    class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-lg transform transition hover:scale-105">
+                    <i class="fas fa-save mr-2"></i>SAVE SETTINGS
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+        <div class="glass rounded-2xl p-8 max-w-md w-full mx-4 text-center">
+            <i class="fas fa-exclamation-triangle text-yellow-400 text-5xl mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Confirm Action</h2>
+            <p class="text-purple-200 mb-6" id="confirmMessage">Are you sure you want to proceed?</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirmYes" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg">
+                    Yes
+                </button>
+                <button id="confirmNo" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">
+                    No
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+
+</html>

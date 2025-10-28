@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Virtual Voting Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #c471f5 75%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .achievement-card {
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="glass fixed top-0 w-full z-50 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="home.html">
+                <div class="flex items-center space-x-2">
+                    <i
+                        class="fas fa-rocket text-accent-primary text-2xl animate__animated animate__pulse animate__infinite"></i>
+                    <span class="text-text-primary font-bold text-xl orbitron">VOTE SPACE</span>
+                </div>
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="vote.html"><button id="voteBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-vote-yea"></i>
+                    </button></a>
+                <a href="profile.html"><button id="profileBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-user"></i>
+                    </button></a>
+                <a href="result.html"><button id="resultsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-chart-pie"></i>
+                    </button></a>
+                <a href="leaderboard.html"><button id="leaderboardBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-trophy"></i>
+                    </button></a>
+                <a href="settings.html"><button id="settingsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-cog"></i>
+                    </button></a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 pt-24 pb-12">
+
+
+        <main class="max-w-6xl mx-auto">
+            <!-- Profile Header -->
+            <div class="glass rounded-3xl p-8 mb-8">
+                <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+                    <div class="relative">
+                        <div class="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-1">
+                            <div class="w-full h-full rounded-full bg-gray-900 flex items-center justify-center">
+                                <i class="fas fa-user-astronaut text-5xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
+                            <i class="fas fa-check text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-3xl font-bold text-white mb-2 orbitron" id="profileUsername">USER_NAME</h2>
+                        <p class="text-purple-200 mb-4">Space Voter Since <span id="joinDate">2023</span></p>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
+                            <span class="bg-purple-500 bg-opacity-30 text-purple-200 px-3 py-1 rounded-full text-sm">
+                                <i class="fas fa-star mr-1"></i>Active Voter
+                            </span>
+                            <span class="bg-blue-500 bg-opacity-30 text-blue-200 px-3 py-1 rounded-full text-sm">
+                                <i class="fas fa-award mr-1"></i>Top Contributor
+                            </span>
+                            <span class="bg-green-500 bg-opacity-30 text-green-200 px-3 py-1 rounded-full text-sm">
+                                <i class="fas fa-shield-alt mr-1"></i>Verified
+                            </span>
+                        </div>
+                        <div class="flex justify-center md:justify-start space-x-6">
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-white" id="totalVotes">0</p>
+                                <p class="text-purple-200 text-sm">Total Votes</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-white" id="totalPoints">0</p>
+                                <p class="text-purple-200 text-sm">Points</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-2xl font-bold text-white" id="userRank">#-</p>
+                                <p class="text-purple-200 text-sm">Rank</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card glass rounded-xl p-6 text-center">
+                    <div class="relative inline-block mb-4">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle class="text-white text-opacity-20" stroke="currentColor" stroke-width="8"
+                                fill="transparent" r="36" cx="40" cy="40"></circle>
+                            <circle class="progress-ring-circle text-purple-400" stroke="currentColor" stroke-width="8"
+                                fill="transparent" r="36" cx="40" cy="40" stroke-dasharray="226" stroke-dashoffset="56">
+                            </circle>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">75%</span>
+                        </div>
+                    </div>
+                    <h3 class="text-white font-semibold mb-1">Participation</h3>
+                    <p class="text-purple-200 text-sm">This Month</p>
+                </div>
+
+                <div class="stat-card glass rounded-xl p-6 text-center">
+                    <i class="fas fa-fire text-4xl text-orange-400 mb-4"></i>
+                    <h3 class="text-white font-bold text-2xl mb-1">7</h3>
+                    <p class="text-purple-200 text-sm">Day Streak</p>
+                </div>
+
+                <div class="stat-card glass rounded-xl p-6 text-center">
+                    <i class="fas fa-medal text-4xl text-yellow-400 mb-4"></i>
+                    <h3 class="text-white font-bold text-2xl mb-1">12</h3>
+                    <p class="text-purple-200 text-sm">Achievements</p>
+                </div>
+
+                <div class="stat-card glass rounded-xl p-6 text-center">
+                    <i class="fas fa-users text-4xl text-blue-400 mb-4"></i>
+                    <h3 class="text-white font-bold text-2xl mb-1">23</h3>
+                    <p class="text-purple-200 text-sm">Referrals</p>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="glass rounded-2xl p-6 mb-8">
+                <h3 class="text-2xl font-bold text-white mb-6 orbitron">ACHIEVEMENTS</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="achievement-card glass rounded-xl p-4 text-center">
+                        <div
+                            class="bg-yellow-500 bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-medal text-yellow-400 text-2xl"></i>
+                        </div>
+                        <h4 class="text-white font-semibold text-sm">First Vote</h4>
+                        <p class="text-purple-200 text-xs">Cast your first vote</p>
+                    </div>
+                    <div class="achievement-card glass rounded-xl p-4 text-center">
+                        <div
+                            class="bg-purple-500 bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-rocket text-purple-400 text-2xl"></i>
+                        </div>
+                        <h4 class="text-white font-semibold text-sm">Space Voter</h4>
+                        <p class="text-purple-200 text-xs">Vote in 5 elections</p>
+                    </div>
+                    <div class="achievement-card glass rounded-xl p-4 text-center">
+                        <div
+                            class="bg-blue-500 bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-crown text-blue-400 text-2xl"></i>
+                        </div>
+                        <h4 class="text-white font-semibold text-sm">Top 10</h4>
+                        <p class="text-purple-200 text-xs">Reach top 10</p>
+                    </div>
+                    <div class="achievement-card glass rounded-xl p-4 text-center opacity-50">
+                        <div
+                            class="bg-gray-500 bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-lock text-gray-400 text-2xl"></i>
+                        </div>
+                        <h4 class="text-gray-400 font-semibold text-sm">Locked</h4>
+                        <p class="text-gray-500 text-xs">Keep voting</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="glass rounded-2xl p-6">
+                <h3 class="text-2xl font-bold text-white mb-6 orbitron">RECENT ACTIVITY</h3>
+                <div class="space-y-4" id="activityFeed">
+                    <div class="flex items-center space-x-4 p-3 bg-white bg-opacity-5 rounded-lg">
+                        <div class="bg-green-500 bg-opacity-20 rounded-full p-2">
+                            <i class="fas fa-check text-green-400"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-white">Voted for Alice Johnson</p>
+                            <p class="text-purple-200 text-sm">2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 p-3 bg-white bg-opacity-5 rounded-lg">
+                        <div class="bg-purple-500 bg-opacity-20 rounded-full p-2">
+                            <i class="fas fa-trophy text-purple-400"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-white">Achieved "Space Voter" badge</p>
+                            <p class="text-purple-200 text-sm">1 day ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 p-3 bg-white bg-opacity-5 rounded-lg">
+                        <div class="bg-blue-500 bg-opacity-20 rounded-full p-2">
+                            <i class="fas fa-chart-line text-blue-400"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-white">Viewed election results</p>
+                            <p class="text-purple-200 text-sm">2 days ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+
+</html>

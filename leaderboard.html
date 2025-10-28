@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Virtual Voting Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass fixed top-0 w-full z-50 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="home.html">
+                <div class="flex items-center space-x-2">
+                    <i
+                        class="fas fa-rocket text-accent-primary text-2xl animate__animated animate__pulse animate__infinite"></i>
+                    <span class="text-text-primary font-bold text-xl orbitron">VOTE SPACE</span>
+                </div>
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="vote.html"><button id="voteBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-vote-yea"></i>
+                    </button></a>
+                <a href="profile.html"><button id="profileBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-user"></i>
+                    </button></a>
+                <a href="result.html"><button id="resultsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-chart-pie"></i>
+                    </button></a>
+                <a href="leaderboard.html"><button id="leaderboardBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-trophy"></i>
+                    </button></a>
+                <a href="settings.html"><button id="settingsBtn"
+                        class="glass rounded-lg px-4 py-2 text-text-primary hover:bg-white hover:bg-opacity-10 transition">
+                        <i class="fas fa-cog"></i>
+                    </button></a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto px-4 py-8">
+        <header class="flex justify-between items-center mb-8" style="margin-top: 80px;">
+            <div>
+                <h1 class="text-3xl font-bold text-indigo-800">
+                    <i class="fas fa-trophy mr-2"></i>Leaderboard
+                </h1>
+                <p class="text-gray-600">Top Participants in the Practice Election</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-white rounded-lg shadow px-4 py-2 flex items-center">
+                    <i class="fas fa-user-circle text-indigo-600 mr-2"></i>
+                    <span id="userDisplay" class="font-medium"></span>
+                </div>
+                <div class="bg-white rounded-lg shadow px-4 py-2 flex items-center">
+                    <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                    <span id="userPoints" class="font-medium">0</span>
+                </div>
+                <button id="darkModeToggle" class="bg-white rounded-lg shadow px-4 py-2">
+                    <i class="fas fa-moon text-gray-700"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Top Voters</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Rank</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Username</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Points</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Badges</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Leaderboard entries will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Achievement Badges</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full mr-4">
+                                <i class="fas fa-medal text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">First-Time Voter</h4>
+                                <p class="text-sm text-gray-600">Cast your first vote in the simulation</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-gray-100 text-gray-600 p-3 rounded-full mr-4">
+                                <i class="fas fa-medal text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Active Participant</h4>
+                                <p class="text-sm text-gray-600">Vote in 3 different elections</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-orange-100 text-orange-600 p-3 rounded-full mr-4">
+                                <i class="fas fa-medal text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Quiz + Vote Champion</h4>
+                                <p class="text-sm text-gray-600">Complete voting quiz and cast your vote</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Your Achievements</h3>
+                    <div id="userBadges" class="grid grid-cols-3 gap-4">
+                        <!-- User badges will be populated here -->
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-gray-800 mb-2">Your Stats</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total Votes Cast</span>
+                                <span id="userVotes" class="font-medium">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Elections Participated</span>
+                                <span id="userElections" class="font-medium">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Rank</span>
+                                <span id="userRank" class="font-medium">#-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center space-x-4">
+                <button id="backToVoteBtn"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Voting
+                </button>
+                <button id="viewResultsBtn"
+                    class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                    <i class="fas fa-chart-pie mr-2"></i>View Results
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script>
+        /* Check if user is logged in
+        if (!localStorage.getItem('username')) {
+            window.location.href = 'index.html';
+        }*/
+
+        // Display user info
+        document.getElementById('userDisplay').textContent = localStorage.getItem('username');
+        document.getElementById('userPoints').textContent = localStorage.getItem('points') || '0';
+
+        // Generate mock leaderboard data
+        const mockLeaderboard = [
+            { rank: 1, username: 'VoterPro', points: 150, badges: ['first', 'active', 'champion'] },
+            { rank: 2, username: 'DemocracyFan', points: 120, badges: ['first', 'active'] },
+            { rank: 3, username: 'CivicEngaged', points: 100, badges: ['first', 'active'] },
+            { rank: 4, username: 'Vote2023', points: 80, badges: ['first'] },
+            { rank: 5, username: 'ElectionExpert', points: 60, badges: ['first'] },
+            { rank: 6, username: 'PollWatcher', points: 40, badges: [] },
+            { rank: 7, username: 'BallotBox', points: 30, badges: [] },
+            { rank: 8, username: 'CivicDuty', points: 20, badges: [] },
+            { rank: 9, username: 'VoiceMatters', points: 15, badges: [] },
+            { rank: 10, username: 'NewVoter', points: 10, badges: [] }
+        ];
+
+        // Populate leaderboard
+        const leaderboardBody = document.getElementById('leaderboardBody');
+        mockLeaderboard.forEach(entry => {
+            const row = document.createElement('tr');
+            row.className = 'border-b hover:bg-gray-50';
+
+            let badgeIcons = '';
+            if (entry.badges.includes('first')) {
+                badgeIcons += '<i class="fas fa-medal text-yellow-500 mr-1" title="First-Time Voter"></i>';
+            }
+            if (entry.badges.includes('active')) {
+                badgeIcons += '<i class="fas fa-medal text-gray-500 mr-1" title="Active Participant"></i>';
+            }
+            if (entry.badges.includes('champion')) {
+                badgeIcons += '<i class="fas fa-medal text-orange-500 mr-1" title="Quiz + Vote Champion"></i>';
+            }
+
+            row.innerHTML = `
+                <td class="py-3 px-4">
+                    ${entry.rank <= 3 ? `<i class="fas fa-trophy text-${entry.rank === 1 ? 'yellow' : entry.rank === 2 ? 'gray' : 'orange'}-500 mr-2"></i>` : ''}
+                    ${entry.rank}
+                </td>
+                <td class="py-3 px-4 font-medium">${entry.username}</td>
+                <td class="py-3 px-4">${entry.points}</td>
+                <td class="py-3 px-4">${badgeIcons}</td>
+            `;
+            leaderboardBody.appendChild(row);
+        });
+
+        // Populate user badges
+        const userBadges = document.getElementById('userBadges');
+        const userPoints = parseInt(localStorage.getItem('points') || '0');
+
+        if (userPoints >= 10) {
+            userBadges.innerHTML += `
+                <div class="text-center">
+                    <div class="bg-yellow-100 text-yellow-600 p-4 rounded-full mb-2">
+                        <i class="fas fa-medal text-3xl"></i>
+                    </div>
+                    <p class="text-xs">First-Time Voter</p>
+                </div>
+            `;
+        }
+
+        if (userPoints >= 50) {
+            userBadges.innerHTML += `
+                <div class="text-center">
+                    <div class="bg-gray-100 text-gray-600 p-4 rounded-full mb-2">
+                        <i class="fas fa-medal text-3xl"></i>
+                    </div>
+                    <p class="text-xs">Active Participant</p>
+                </div>
+            `;
+        }
+
+        if (userPoints >= 100) {
+            userBadges.innerHTML += `
+                <div class="text-center">
+                    <div class="bg-orange-100 text-orange-600 p-4 rounded-full mb-2">
+                        <i class="fas fa-medal text-3xl"></i>
+                    </div>
+                    <p class="text-xs">Quiz + Vote Champion</p>
+                </div>
+            `;
+        }
+
+        // Update user stats
+        document.getElementById('userVotes').textContent = Math.floor(userPoints / 10);
+        document.getElementById('userElections').textContent = Math.floor(userPoints / 30);
+
+        // Find user rank
+        const username = localStorage.getItem('username');
+        const userEntry = mockLeaderboard.find(entry => entry.username === username);
+        if (userEntry) {
+            document.getElementById('userRank').textContent = `#${userEntry.rank}`;
+        } else {
+            document.getElementById('userRank').textContent = '#-';
+        }
+
+        // Navigation buttons
+        document.getElementById('backToVoteBtn').addEventListener('click', function () {
+            window.location.href = 'vote.html';
+        });
+
+        document.getElementById('viewResultsBtn').addEventListener('click', function () {
+            window.location.href = 'result.html';
+        });
+
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark');
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+
+</html>
